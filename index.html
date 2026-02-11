@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yajure App - V3.3</title>
+    <title>Yajure App - V3.4</title>
     <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/emoji/32/000000/house-with-garden.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     
-    <script src="https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js"></script>
-
     <style>
         * { box-sizing: border-box; }
         :root { --accent-blue: #3b82f6; --dark-bg: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); --wa-green: #25d366; }
@@ -24,7 +22,6 @@
         header { background: rgba(15, 23, 42, 0.9); padding: 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .container { max-width: 480px; margin: auto; padding: 20px 15px; }
 
-        /* BARRA DE FILTROS */
         .filter-scroll { overflow-x: auto; white-space: nowrap; padding-bottom: 10px; margin-bottom: 15px; }
         .filter-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 20px; margin-right: 8px; font-size: 13px; cursor: pointer; transition: 0.3s; }
         .filter-btn.active { background: var(--accent-blue); border-color: var(--accent-blue); font-weight: 800; }
@@ -47,7 +44,7 @@
         
         .btn-delete-admin { background: #ff4757; color: white; border: none; padding: 6px 10px; border-radius: 10px; cursor: pointer; margin-left: 10px; }
         
-        /* LA FOTO TIENE ICONO DE LUPA AHORA */
+        /* FOTO CLICKABLE */
         .post img { width: 100%; border-radius: 20px; margin: 10px 0; display: block; cursor: zoom-in; }
         
         .btn-like { background: #fff5f5; color: #ff4757; border: 1px solid #ffecec; padding: 8px 15px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; text-align: left; margin-bottom: 10px; }
@@ -57,11 +54,14 @@
         .comment-input { flex: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px; font-size: 13px; outline: none; }
         .btn-send-comment { background: var(--accent-blue); color: white; border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
 
-        /* MODAL DE ZOOM MEJORADO */
-        #photo-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,1); z-index: 5000; overflow: hidden; justify-content: center; align-items: center; }
-        #modal-container { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-        #modal-img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        #close-modal-btn { position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; z-index: 5001; background: rgba(0,0,0,0.5); width: 40px; height: 40px; text-align: center; line-height: 40px; border-radius: 50%; }
+        /* MODAL DE ZOOM SIMPLE Y ROBUSTO */
+        #photo-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,1); z-index: 5000; overflow: auto; justify-content: center; align-items: center; }
+        #modal-container { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: auto; }
+        #modal-img { max-width: 100%; max-height: 100%; transition: transform 0.3s ease; cursor: zoom-in; }
+        #close-modal-btn { position: fixed; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; z-index: 5001; background: rgba(0,0,0,0.5); width: 40px; height: 40px; text-align: center; line-height: 40px; border-radius: 50%; }
+        
+        /* Clase para el Zoom Activado */
+        .zoomed-in { transform: scale(2.5); cursor: zoom-out !important; }
     </style>
 </head>
 <body>
@@ -92,4 +92,239 @@
 
         <a id="wa-notice" href="#" target="_blank">📢 ¡AVISAR POR WHATSAPP!</a>
         
-        <label for="fotoInput" id="labelPost" class="btn-post">✨ SUBIR
+        <label for="fotoInput" id="labelPost" class="btn-post">✨ SUBIR NUEVO RECUERDO</label>
+        
+        <div id="upload-options" style="display:none;">
+            <select id="categoriaInput" class="category-select">
+                <option value="Familia">🏠 ¿Qué tipo de foto es? (Familia)</option>
+                <option value="Fiestas">🎉 Fiestas</option>
+                <option value="Viajes">✈️ Viajes</option>
+                <option value="Recuerdos">📜 Recuerdos</option>
+                <option value="Jodedera">🤣 Jodedera</option>
+            </select>
+        </div>
+
+        <div id="status-msg"></div>
+        <input type="file" id="fotoInput" style="display:none;" accept="image/*">
+        <div id="muro"></div>
+    </div>
+</div>
+
+<div id="photo-modal">
+    <div id="close-modal-btn" onclick="cerrarLupa()">✕</div>
+    <div id="modal-container" onclick="toggleZoom(event)">
+        <img id="modal-img" src="">
+    </div>
+</div>
+
+<script type="module">
+    import { db } from "./firebase.js";
+    import { collection, addDoc, query, orderBy, onSnapshot, updateDoc, doc, arrayUnion, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const CLAVE_NORMAL = "familia2026";
+    const CLAVE_ADMIN = "ticoadmin2026";
+    const IMGBB_KEY = "07dd4f0a1180673510c5047ae8b5eec8"; 
+
+    let todosLosPosts = [];
+    let filtroActual = 'Todo';
+
+    if(localStorage.getItem('familia_auth')) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app-content').style.display = 'block';
+    }
+
+    document.getElementById('passInput').oninput = (e) => {
+        const val = e.target.value.toLowerCase();
+        if(val === CLAVE_NORMAL || val === CLAVE_ADMIN) {
+            localStorage.setItem('familia_auth', val);
+            location.reload();
+        }
+    };
+
+    const getNombre = () => {
+        let n = localStorage.getItem('user_n');
+        if(!n) { n = prompt("👤 Tu nombre:"); if(n) localStorage.setItem('user_n', n); }
+        return n;
+    };
+
+    // --- ZOOM MANUAL (SIN LIBRERÍAS EXTERNAS) ---
+    window.abrirLupa = (url) => {
+        const modal = document.getElementById('photo-modal');
+        const img = document.getElementById('modal-img');
+        img.src = url;
+        img.classList.remove('zoomed-in'); // Resetear zoom
+        modal.style.display = 'flex';
+    };
+
+    window.cerrarLupa = () => {
+        document.getElementById('photo-modal').style.display = 'none';
+    };
+
+    // Al hacer click en la foto grande, hace zoom
+    window.toggleZoom = (e) => {
+        // Si tocan la X no hacemos zoom
+        if(e.target.id === 'close-modal-btn') return;
+        
+        const img = document.getElementById('modal-img');
+        if (img.classList.contains('zoomed-in')) {
+            img.classList.remove('zoomed-in');
+        } else {
+            img.classList.add('zoomed-in');
+        }
+    };
+
+    // --- SUBIDA DE FOTOS ---
+    document.getElementById('labelPost').onclick = (e) => {
+        const opts = document.getElementById('upload-options');
+        if(opts.style.display === 'none') {
+            e.preventDefault();
+            opts.style.display = 'block';
+            document.getElementById('labelPost').innerHTML = "📸 AHORA SÍ, TOCA AQUÍ";
+        }
+    };
+
+    document.getElementById('fotoInput').onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const nombre = getNombre();
+        if (!nombre) return;
+        
+        const cat = document.getElementById('categoriaInput').value;
+        const mensaje = prompt(`✍️ Mensaje para ${cat}:`);
+        
+        const label = document.getElementById('labelPost');
+        const status = document.getElementById('status-msg');
+        label.innerHTML = "⏳ PROCESANDO...";
+        
+        try {
+            status.innerHTML = "🎨 Comprimiendo...";
+            const compressedFile = await compressImage(file);
+            status.innerHTML = "🚀 Subiendo a la nube...";
+            const formData = new FormData();
+            formData.append("image", compressedFile);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: formData });
+            const imgData = await res.json();
+            
+            if (imgData.success) {
+                status.innerHTML = "📝 Guardando...";
+                await addDoc(collection(db, "mensajes"), {
+                    texto: mensaje || "", 
+                    foto: imgData.data.url, 
+                    autor: nombre, 
+                    categoria: cat, 
+                    fecha: new Date(), 
+                    likes: 0, 
+                    comentarios: []
+                });
+                label.innerHTML = "✨ SUBIR NUEVO RECUERDO";
+                status.innerHTML = "✅ ¡Listo!";
+                document.getElementById('upload-options').style.display = 'none';
+                document.getElementById('wa-notice').style.display = "block";
+                document.getElementById('wa-notice').href = `https://wa.me/?text=¡Nuevo+recuerdo+en+${cat}!`;
+            }
+        } catch (err) { 
+            alert("Error: " + err.message);
+            label.innerHTML = "✨ SUBIR NUEVO RECUERDO";
+        }
+    };
+
+    async function compressImage(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX = 1200;
+                    let w = img.width; let h = img.height;
+                    if (w > MAX) { h *= MAX / w; w = MAX; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.8);
+                };
+            };
+        });
+    }
+
+    window.filtrar = (cat) => {
+        filtroActual = cat;
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.innerText.includes(cat) || (cat === 'Todo' && btn.innerText === 'Todo')) btn.classList.add('active');
+        });
+        pintarMuro();
+    };
+
+    const q = query(collection(db, "mensajes"), orderBy("fecha", "desc"));
+    onSnapshot(q, (snapshot) => {
+        todosLosPosts = [];
+        snapshot.forEach((doc) => {
+            todosLosPosts.push({ id: doc.id, ...doc.data() });
+        });
+        pintarMuro();
+    });
+
+    function pintarMuro() {
+        const muro = document.getElementById('muro');
+        muro.innerHTML = "";
+        const esAdmin = localStorage.getItem('familia_auth') === "ticoadmin2026";
+        let ultimoMes = "";
+
+        const postsAmostrar = todosLosPosts.filter(p => filtroActual === 'Todo' || p.categoria === filtroActual);
+
+        if(postsAmostrar.length === 0) {
+            muro.innerHTML = `<div style="text-align:center; padding:30px; color:#94a3b8; font-size:14px;">Nada en "${filtroActual}"... ¡Sube la primera foto! 📸</div>`;
+            return;
+        }
+
+        postsAmostrar.forEach((data) => {
+            const fechaObj = data.fecha ? data.fecha.toDate() : new Date();
+            const mesActual = fechaObj.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+            const fechaCorta = fechaObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+            const catLabel = data.categoria || "Familia"; 
+
+            if (mesActual !== ultimoMes) {
+                muro.innerHTML += `<div class="month-separator">${mesActual}</div>`;
+                ultimoMes = mesActual;
+            }
+
+            let comentariosHtml = data.comentarios ? data.comentarios.map(c => `<div class="comment"><b>${c.autor}:</b> ${c.texto}</div>`).join('') : "";
+
+            muro.innerHTML += `
+                <div class="post">
+                    <div class="post-header">
+                        <span class="post-author">👤 ${data.autor} <span class="category-badge">${catLabel}</span></span>
+                        <div>
+                            <span class="post-date">${fechaCorta}</span>
+                            ${esAdmin ? `<button class="btn-delete-admin" onclick="window.borrarPost('${data.id}')">🗑️</button>` : ""}
+                        </div>
+                    </div>
+                    <p>${data.texto}</p>
+                    <img src="${data.foto}" onclick="window.abrirLupa('${data.foto}')">
+                    <button class="btn-like" onclick="darLike('${data.id}')">❤️ ${data.likes || 0}</button>
+                    <div class="comments-section">${comentariosHtml}
+                        <div class="comment-input-group">
+                            <input type="text" id="input-${data.id}" class="comment-input" placeholder="Opinar...">
+                            <button class="btn-send-comment" onclick="enviarComentario('${data.id}')">Publicar</button>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    }
+
+    window.darLike = async (id) => await updateDoc(doc(db, "mensajes", id), { likes: increment(1) });
+    window.enviarComentario = async (id) => {
+        const input = document.getElementById(`input-${id}`);
+        const nombre = getNombre();
+        if (!input.value || !nombre) return;
+        await updateDoc(doc(db, "mensajes", id), { comentarios: arrayUnion({ autor: nombre, texto: input.value }) });
+        input.value = "";
+    };
+    window.borrarPost = async (id) => {
+        if(confirm("¿Borrar este recuerdo?")) await deleteDoc(doc(db, "mensajes", id));
+    };
+</script>
+</body>
+</html>
