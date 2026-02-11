@@ -3,65 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yajure App - V2.6</title>
+    <title>Yajure App - V2.7</title>
     <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/emoji/32/000000/house-with-garden.png">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; }
         :root { --accent-blue: #3b82f6; --dark-bg: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); --wa-green: #25d366; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; min-height: 100vh; background: var(--dark-bg); color: #f8fafc; }
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .login-card { background: rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 30px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-        #passInput { padding: 15px; border-radius: 15px; border: none; text-align: center; font-size: 18px; margin-top: 15px; outline: none; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; min-height: 100vh; background: var(--dark-bg); background-attachment: fixed; color: #f8fafc; }
+        
+        /* PANTALLA DE INICIO RESTAURADA */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=2070') no-repeat center center/cover; display: flex; align-items: flex-start; justify-content: center; z-index: 1000; padding-top: 100px; }
+        #login-screen::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); }
+        .login-card { position: relative; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(20px); padding: 40px 25px; border-radius: 35px; text-align: center; max-width: 320px; width: 90%; box-shadow: 0 30px 60px rgba(0,0,0,0.6); }
+        #passInput { width: 100%; padding: 18px; border: 2px solid rgba(255,255,255,0.2); border-radius: 20px; background: rgba(255,255,255,0.08); color: white; text-align: center; font-size: 17px; outline: none; margin-top: 20px; }
+        
         #app-content { display: none; padding-bottom: 40px; }
-        header { background: rgba(15, 23, 42, 0.9); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .container { max-width: 480px; margin: auto; padding: 20px; }
-        .btn-post { background: var(--accent-blue); color: white; padding: 18px; border-radius: 20px; font-weight: 800; cursor: pointer; text-align: center; display: block; margin-bottom: 10px; }
+        header { background: rgba(15, 23, 42, 0.9); padding: 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .container { max-width: 480px; margin: auto; padding: 20px 15px; }
+        .btn-post { background: var(--accent-blue); color: white; padding: 16px; border-radius: 18px; font-weight: 700; cursor: pointer; display: block; text-align: center; margin-bottom: 10px; }
+        #status-msg { text-align: center; font-size: 12px; color: #94a3b8; margin-bottom: 20px; min-height: 15px; }
+        #wa-notice { display: none; background: var(--wa-green); color: white; padding: 18px; border-radius: 22px; text-align: center; font-weight: 800; text-decoration: none; margin-bottom: 25px; }
+
+        /* MURO Y COMENTARIOS */
+        .post { background: white; border-radius: 28px; padding: 20px; margin-bottom: 25px; color: #1e293b; position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: 800; color: var(--accent-blue); }
+        .btn-delete-admin { background: #ff4757; color: white; border: none; padding: 8px 12px; border-radius: 12px; cursor: pointer; }
+        .post img { width: 100%; border-radius: 20px; margin: 10px 0; display: block; }
+        .btn-like { background: #fff5f5; color: #ff4757; border: 1px solid #ffecec; padding: 8px 15px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; text-align: left; margin-bottom: 10px; }
         
-        /* MONITOR DE ESTADO */
-        #status-msg { text-align: center; font-size: 13px; color: #94a3b8; margin-bottom: 20px; min-height: 20px; }
-        
-        #wa-notice { display: none; background: var(--wa-green); color: white; padding: 18px; border-radius: 20px; text-align: center; font-weight: 800; text-decoration: none; margin-bottom: 25px; display: block; }
-        .post { background: white; border-radius: 25px; padding: 20px; margin-bottom: 25px; color: #1e293b; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .post img { width: 100%; border-radius: 15px; margin-top: 10px; display: block; }
-        .btn-delete { background: #ff4757; color: white; border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+        .comments-section { background: #f8fafc; padding: 12px; border-radius: 18px; }
+        .comment { font-size: 13px; margin-bottom: 6px; border-bottom: 1px solid #edf2f7; padding-bottom: 4px; }
+        .comment-input-group { display: flex; gap: 8px; margin-top: 10px; }
+        .comment-input { flex: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px; font-size: 13px; outline: none; }
+        .btn-send-comment { background: var(--accent-blue); color: white; border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="login-card">
-        <div style="font-size: 40px;">🌅</div>
-        <h2>Bienvenido</h2>
-        <input type="password" id="passInput" placeholder="Clave">
+        <div style="font-size: 45px; margin-bottom: 15px;">🌅</div>
+        <h2 style="color: white; margin: 0;">Bienvenido a Nuestros Recuerdos</h2>
+        <p style="color: #cbd5e1; margin-top: 5px;">Familia Yajure</p>
+        <input type="password" id="passInput" placeholder="Clave de acceso">
     </div>
 </div>
 
 <div id="app-content">
     <header>
-        <h1 style="font-size: 18px; margin:0;">Familia Yajure</h1>
-        <button onclick="localStorage.clear(); location.reload();" style="background:none; border:none; color:#94a3b8; cursor:pointer;">Salir 🔒</button>
+        <h1 style="font-size: 18px; margin:0; color:white;">Familia Yajure</h1>
+        <button onclick="localStorage.clear(); location.reload();" style="background:rgba(255,255,255,0.1); color:#94a3b8; border:none; padding:10px; border-radius:10px; cursor:pointer;">Salir 🔒</button>
     </header>
     <div class="container">
         <a id="wa-notice" href="#" target="_blank">📢 ¡AVISAR POR WHATSAPP!</a>
-        
         <label for="fotoInput" id="labelPost" class="btn-post">✨ SUBIR NUEVO RECUERDO</label>
-        <div id="status-msg"></div> <input type="file" id="fotoInput" style="display:none;" accept="image/*">
-        
+        <div id="status-msg"></div>
+        <input type="file" id="fotoInput" style="display:none;" accept="image/*">
         <div id="muro"></div>
     </div>
 </div>
 
 <script type="module">
     import { db } from "./firebase.js";
-    import { collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { collection, addDoc, query, orderBy, onSnapshot, updateDoc, doc, arrayUnion, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const CLAVE_NORMAL = "familia2026";
     const CLAVE_ADMIN = "ticoadmin2026";
     const IMGBB_KEY = "07dd4f0a1180673510c5047ae8b5eec8"; 
-
-    const status = document.getElementById('status-msg');
-    const label = document.getElementById('labelPost');
 
     if(localStorage.getItem('familia_auth')) {
         document.getElementById('login-screen').style.display = 'none';
@@ -76,46 +84,48 @@
         }
     };
 
+    const getNombre = () => {
+        let n = localStorage.getItem('user_n');
+        if(!n) { n = prompt("👤 Tu nombre:"); if(n) localStorage.setItem('user_n', n); }
+        return n;
+    };
+
     document.getElementById('fotoInput').onchange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        const nombre = prompt("👤 Tu nombre:");
+        const nombre = getNombre();
+        if (!nombre) return;
         const mensaje = prompt("✍️ Mensaje:");
         
+        const label = document.getElementById('labelPost');
+        const status = document.getElementById('status-msg');
         label.innerHTML = "⏳ PROCESANDO...";
-        status.innerHTML = "🎨 Comprimiendo imagen...";
         
         try {
-            // 1. COMPRESIÓN REAL
-            const compressedBlob = await compressImage(file);
+            status.innerHTML = "🎨 Comprimiendo foto...";
+            const compressedFile = await compressImage(file);
             
-            status.innerHTML = "🚀 Subiendo a la nube (ImgBB)...";
+            status.innerHTML = "🚀 Enviando a la nube...";
             const formData = new FormData();
-            formData.append("image", compressedBlob); // AHORA SÍ USA LA COMPRIMIDA
-            
+            formData.append("image", compressedFile);
             const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: formData });
             const imgData = await res.json();
             
             if (imgData.success) {
-                status.innerHTML = "📝 Guardando en Google (Firebase)...";
-                
+                status.innerHTML = "📝 Guardando en Google...";
                 await addDoc(collection(db, "mensajes"), {
-                    texto: mensaje || "", 
-                    foto: imgData.data.url, 
-                    autor: nombre || "Anónimo", 
-                    fecha: new Date()
+                    texto: mensaje || "", foto: imgData.data.url, autor: nombre, fecha: new Date(), likes: 0, comentarios: []
                 });
                 
-                status.innerHTML = "✅ ¡Listo! Foto publicada.";
+                label.innerHTML = "✨ SUBIR NUEVO RECUERDO";
+                status.innerHTML = "✅ ¡Publicado con éxito!";
                 document.getElementById('wa-notice').style.display = "block";
                 document.getElementById('wa-notice').href = `https://wa.me/?text=¡Nuevo+recuerdo!`;
             }
         } catch (err) { 
-            status.innerHTML = "❌ Error: " + err.message;
-            alert("Error: " + err.message);
-        } finally {
+            alert("❌ Error de Google: Revisa tus permisos en Firebase Rules."); 
             label.innerHTML = "✨ SUBIR NUEVO RECUERDO";
-            document.getElementById('fotoInput').value = "";
+            status.innerHTML = "❌ Falló el guardado.";
         }
     };
 
@@ -128,7 +138,7 @@
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX = 1000;
+                    const MAX = 1200;
                     let w = img.width; let h = img.height;
                     if (w > MAX) { h *= MAX / w; w = MAX; }
                     canvas.width = w; canvas.height = h;
@@ -139,28 +149,46 @@
         });
     }
 
+    window.darLike = async (id) => await updateDoc(doc(db, "mensajes", id), { likes: increment(1) });
+    window.enviarComentario = async (id) => {
+        const input = document.getElementById(`input-${id}`);
+        const nombre = getNombre();
+        if (!input.value || !nombre) return;
+        await updateDoc(doc(db, "mensajes", id), { comentarios: arrayUnion({ autor: nombre, texto: input.value }) });
+        input.value = "";
+    };
+    window.borrarPost = async (id) => {
+        if(confirm("¿Borrar este recuerdo?")) await deleteDoc(doc(db, "mensajes", id));
+    };
+
     const q = query(collection(db, "mensajes"), orderBy("fecha", "desc"));
     onSnapshot(q, (snapshot) => {
         const muro = document.getElementById('muro');
         muro.innerHTML = "";
         const esAdmin = localStorage.getItem('familia_auth') === "ticoadmin2026";
-        snapshot.forEach((d) => {
-            const data = d.data();
+        snapshot.forEach((snapshotDoc) => {
+            const data = snapshotDoc.data();
+            const id = snapshotDoc.id;
+            let comentariosHtml = data.comentarios ? data.comentarios.map(c => `<div class="comment"><b>${c.autor}:</b> ${c.texto}</div>`).join('') : "";
+
             muro.innerHTML += `
                 <div class="post">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <b>👤 ${data.autor}</b>
-                        ${esAdmin ? `<button class="btn-delete" onclick="window.borrarPost('${d.id}')">🗑️</button>` : ""}
+                    <div class="post-header">
+                        <span>👤 ${data.autor}</span>
+                        ${esAdmin ? `<button class="btn-delete-admin" onclick="window.borrarPost('${id}')">🗑️</button>` : ""}
                     </div>
                     <p>${data.texto}</p>
                     <img src="${data.foto}">
+                    <button class="btn-like" onclick="darLike('${id}')">❤️ ${data.likes || 0}</button>
+                    <div class="comments-section">${comentariosHtml}
+                        <div class="comment-input-group">
+                            <input type="text" id="input-${id}" class="comment-input" placeholder="Opinar...">
+                            <button class="btn-send-comment" onclick="enviarComentario('${id}')">Publicar</button>
+                        </div>
+                    </div>
                 </div>`;
         });
     });
-
-    window.borrarPost = async (id) => {
-        if(confirm("¿Borrar?")) await deleteDoc(doc(db, "mensajes", id));
-    };
 </script>
 </body>
 </html>
