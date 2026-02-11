@@ -6,13 +6,19 @@
     <title>Familia Yajure - Recuerdos</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --accent: #3b82f6;
+            --bg-gradient: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             margin: 0; min-height: 100vh;
-            /* AZUL CIELO SUAVE - Ahora sí notarás el cambio */
-            background: linear-gradient(180deg, #bbd2f8 0%, #e2ebf0 100%);
+            /* COLOR CON VIDA: Azul profundo tipo 'Dark Mode' elegante */
+            background: var(--bg-gradient);
             background-attachment: fixed;
-            color: #1e293b;
+            color: #f8fafc;
         }
 
         /* --- BIENVENIDA --- */
@@ -24,52 +30,53 @@
         #login-screen::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); }
 
         .login-card {
-            position: relative; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
-            padding: 40px 30px; border-radius: 30px; text-align: center; max-width: 320px; width: 85%;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            position: relative; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);
+            padding: 40px 30px; border-radius: 35px; text-align: center; max-width: 320px; width: 85%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
 
         /* --- APP PRINCIPAL --- */
         #app-content { display: none; }
         
         header { 
-            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(15px);
             padding: 15px 20px; position: sticky; top: 0; z-index: 100;
             display: flex; justify-content: center; align-items: center;
-            border-bottom: 2px solid #3b82f6; position: relative;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        .header-title { font-weight: 800; font-size: 19px; color: #1e3a8a; margin: 0; }
+        .header-title { font-weight: 800; font-size: 20px; color: #fff; margin: 0; letter-spacing: -0.5px; }
         
-        /* Botón Salir Estilo Botón Real */
+        /* NUEVO BOTÓN CERRAR SESIÓN: Elegante y Minimalista */
         .btn-logout { 
-            position: absolute; right: 15px; 
-            background: #ffffff; color: #ef4444; 
-            border: 1px solid #fee2e2; padding: 6px 12px; border-radius: 12px; 
-            font-size: 11px; font-weight: 700; cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: absolute; right: 20px; 
+            background: rgba(255,255,255,0.1); color: #94a3b8; 
+            border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 100px; 
+            font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.3s;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
+        .btn-logout:hover { background: #ef4444; color: white; border-color: #ef4444; }
 
-        .container { max-width: 450px; margin: auto; padding: 25px 15px; }
+        .container { max-width: 480px; margin: auto; padding: 25px 15px; }
 
-        /* Botón Subir */
+        /* Botón Subir: Verde Vibrante */
         .btn-post { 
             background: #10b981; color: white; border: none; width: 100%; 
-            padding: 16px; border-radius: 20px; font-weight: 700; cursor: pointer; 
-            font-size: 16px; margin-bottom: 25px; display: block; text-align: center;
-            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+            padding: 18px; border-radius: 25px; font-weight: 700; cursor: pointer; 
+            font-size: 16px; margin-bottom: 30px; display: block; text-align: center;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
         }
 
-        /* Tarjetas de Fotos (Ahora más cuadradas y ordenadas) */
+        /* Tarjetas de Fotos: Cuadradas, Limpias y con Borde Suave */
         .post { 
-            background: white; border-radius: 20px; padding: 15px; margin-bottom: 20px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 1px solid #e2e8f0;
+            background: var(--card-bg); border-radius: 28px; padding: 20px; margin-bottom: 25px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+            color: #1e293b;
         }
-        .post-author { font-weight: 800; color: #3b82f6; font-size: 13px; margin-bottom: 5px; }
-        .post-text { font-size: 15px; color: #334155; line-height: 1.4; margin: 0; }
-        .post img { width: 100%; border-radius: 15px; margin-top: 12px; display: block; }
+        .post-author { font-weight: 800; color: var(--accent); font-size: 14px; margin-bottom: 10px; }
+        .post-text { font-size: 16px; line-height: 1.5; margin: 0; font-weight: 400; }
+        .post img { width: 100%; border-radius: 20px; margin-top: 15px; display: block; box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
 
-        #passInput { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 15px; font-size: 16px; text-align: center; outline: none; box-sizing: border-box; }
+        #passInput { width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 20px; font-size: 17px; text-align: center; outline: none; }
         input[type="file"] { display: none; }
     </style>
 </head>
@@ -77,20 +84,20 @@
 
 <div id="login-screen">
     <div class="login-card">
-        <div style="font-size: 40px; margin-bottom: 10px;">🏡</div>
-        <h2 style="margin:0 0 5px 0; font-size: 20px;">Bienvenido a Nuestros Recuerdos</h2>
-        <p style="color:#64748b; font-size:13px; margin-bottom:20px;">Familia Yajure</p>
-        <input type="password" id="passInput" placeholder="Introduce la clave">
+        <div style="font-size: 45px; margin-bottom: 10px;">🏠</div>
+        <h2 style="margin: 0 0 5px 0; color: #1e293b;">Bienvenido a Nuestros Recuerdos</h2>
+        <p style="color:#64748b; font-size: 14px; margin-bottom: 30px;">Familia Yajure</p>
+        <input type="password" id="passInput" placeholder="Clave secreta">
     </div>
 </div>
 
 <div id="app-content">
     <header>
         <h1 class="header-title">Familia Yajure</h1>
-        <button class="btn-logout" id="btnLogout">CERRAR SESIÓN</button>
+        <button class="btn-logout" id="btnLogout">Cerrar Sesión</button>
     </header>
     <div class="container">
-        <label for="fotoInput" class="btn-post">📸 SUBIR NUEVA FOTO</label>
+        <label for="fotoInput" class="btn-post">✨ COMPARTIR RECUERDO</label>
         <input type="file" id="fotoInput" accept="image/*">
         <div id="muro"></div>
     </div>
@@ -131,7 +138,7 @@
     fotoInput.onchange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        const mensaje = prompt("¿Qué quieres escribir en esta foto?");
+        const mensaje = prompt("Escribe una dedicatoria:");
         const formData = new FormData();
         formData.append("image", file);
         try {
@@ -145,7 +152,7 @@
                     fecha: new Date()
                 });
             }
-        } catch (e) { alert("Error al subir."); }
+        } catch (error) { alert("Error al subir."); }
     };
 
     const q = query(collection(db, "mensajes"), orderBy("fecha", "desc"));
@@ -156,7 +163,7 @@
             muro.innerHTML += `
                 <div class="post">
                     <div class="post-author">👤 ${data.autor}</div>
-                    <p class="post-text">${data.texto}</p>
+                    <div class="post-text">${data.texto}</div>
                     ${data.foto ? `<img src="${data.foto}" loading="lazy">` : ""}
                 </div>`;
         });
