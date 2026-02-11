@@ -75,6 +75,7 @@
     passInput.oninput = () => {
         if(passInput.value.toLowerCase() === CLAVE_CORRECTA) {
             localStorage.setItem('familia_auth', 'true');
+            location.reload();
             loginScreen.style.opacity = '0';
             setTimeout(() => {
                 loginScreen.style.display = 'none';
