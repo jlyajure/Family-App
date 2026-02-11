@@ -111,7 +111,56 @@
         location.reload();
     };
 
-    document.getElementById('fotoInput').onchange = async (e) => {
+    document.document.getElementById('fotoInput').onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const nombre = prompt("👤 Tu nombre:");
+        if (!nombre) return;
+        
+        const mensaje = prompt("✍️ Cuéntanos sobre esta foto:");
+        
+        const formData = new FormData();
+        formData.append("image", file);
+        
+        // Mensaje visual de "Cargando"
+        const btnLabel = document.querySelector('label[for="fotoInput"]');
+        btnLabel.innerHTML = "⏳ SUBIENDO RECUERDO...";
+        btnLabel.style.background = "#64748b";
+
+        try {
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: formData });
+            const imgData = await res.json();
+            
+            if (imgData.success) {
+                // Si la foto se subió bien a ImgBB, la guardamos en Firebase
+                await addDoc(collection(db, "mensajes"), {
+                    texto: mensaje || "",
+                    foto: imgData.data.url,
+                    autor: nombre,
+                    fecha: new Date(),
+                    likes: 0,
+                    comentarios: []
+                });
+                
+                alert("✅ ¡Foto compartida con éxito!");
+                
+                const textoWA = encodeURIComponent(`¡Hola familia! Acabo de subir un nuevo recuerdo a nuestra App. 📸✨\n\nLink: ${window.location.href}`);
+                waNotice.href = `https://wa.me/?text=${textoWA}`;
+                waNotice.style.display = "block";
+            } else {
+                // Si ImgBB falla, nos dirá por qué
+                alert("❌ Error de imagen: " + imgData.error.message);
+            }
+        } catch (error) {
+            // Si Firebase falla (por reglas o conexión), nos avisará aquí
+            console.error(error);
+            alert("❌ Error técnico: " + error.message);
+        } finally {
+            btnLabel.innerHTML = "✨ SUBIR NUEVO RECUERDO";
+            btnLabel.style.background = "var(--accent-blue)";
+        }
+    }; = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
         const nombre = prompt("👤 Tu nombre:");
