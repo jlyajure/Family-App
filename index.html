@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Familia Yajure - Recuerdos</title>
+    <title>Yajure App - V2.0</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/emoji/32/000000/house-with-garden.png">
     <link rel="apple-touch-icon" href="https://img.icons8.com/emoji/160/000000/house-with-garden.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1e293b">
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -26,13 +25,12 @@
         
         #app-content { display: none; padding-bottom: 40px; }
         header { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(15px); padding: 25px 20px 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-top: calc(30px + env(safe-area-inset-top)); }
-        .header-title { font-weight: 800; font-size: 18px; color: white; margin: 0; }
         .btn-logout { background: rgba(255,255,255,0.1); color: #94a3b8; border: 1px solid rgba(255,255,255,0.2); padding: 10px 16px; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
         
         .container { max-width: 480px; margin: auto; padding: 20px 15px; }
-        .btn-post { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 14px; border-radius: 18px; font-weight: 700; cursor: pointer; font-size: 16px; margin-bottom: 20px; display: block; text-align: center; }
+        .btn-post { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 16px; border-radius: 18px; font-weight: 700; cursor: pointer; font-size: 16px; margin-bottom: 20px; display: block; text-align: center; }
 
-        #wa-notice { display: none; background: var(--wa-green); color: white; padding: 15px; border-radius: 20px; text-align: center; font-weight: 800; text-decoration: none; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3); }
+        #wa-notice { display: none; background: var(--wa-green); color: white; padding: 15px; border-radius: 20px; text-align: center; font-weight: 800; text-decoration: none; margin-bottom: 25px; }
 
         .post { background: white; border-radius: 28px; padding: 20px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); color: #1e293b; position: relative; }
         .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -44,7 +42,6 @@
         
         .comments-section { margin-top: 15px; background: #f8fafc; padding: 12px; border-radius: 18px; }
         .comment { font-size: 13px; margin-bottom: 6px; border-bottom: 1px solid #edf2f7; padding-bottom: 4px; }
-        .comment b { color: var(--accent-blue); }
         .comment-input-group { display: flex; gap: 8px; margin-top: 10px; }
         .comment-input { flex: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px; font-size: 13px; outline: none; }
         .btn-send-comment { background: var(--accent-blue); color: white; border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
@@ -87,19 +84,18 @@
     const labelPost = document.getElementById('labelPost');
     const fotoInput = document.getElementById('fotoInput');
 
-    if(localStorage.getItem('familia_auth')) {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('app-content').style.display = 'block';
-    }
-
-    // --- FUNCIÓN PARA OBTENER EL NOMBRE (SOLO PIDE UNA VEZ) ---
-    const getNombreUsuario = () => {
-        let nombre = localStorage.getItem('usuario_nombre');
-        if (!nombre) {
-            nombre = prompt("👤 Escribe tu nombre (solo lo pediremos una vez):");
-            if (nombre) localStorage.setItem('usuario_nombre', nombre);
+    const checkLogin = () => {
+        if(localStorage.getItem('familia_auth')) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-content').style.display = 'block';
         }
-        return nombre;
+    };
+    checkLogin();
+
+    const getNombre = () => {
+        let n = localStorage.getItem('user_n');
+        if(!n) { n = prompt("👤 Tu nombre:"); if(n) localStorage.setItem('user_n', n); }
+        return n;
     };
 
     document.getElementById('passInput').oninput = (e) => {
@@ -111,19 +107,17 @@
     };
 
     document.getElementById('btnLogout').onclick = () => {
-        localStorage.removeItem('familia_auth');
-        localStorage.removeItem('usuario_nombre'); // Para que pueda cambiar de nombre si quiere
+        localStorage.clear();
         location.reload();
     };
 
     fotoInput.onchange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        
-        const nombre = getNombreUsuario();
+        const nombre = getNombre();
         if (!nombre) return;
-        
         const mensaje = prompt("✍️ Cuéntanos sobre esta foto:");
+        
         labelPost.innerHTML = "⏳ SUBIENDO...";
         
         try {
@@ -138,16 +132,16 @@
                 await addDoc(collection(db, "mensajes"), {
                     texto: mensaje || "", foto: imgData.data.url, autor: nombre, fecha: new Date(), likes: 0, comentarios: []
                 });
-                
-                // ARREGLO INMEDIATO
-                labelPost.innerHTML = "✨ SUBIR NUEVO RECUERDO";
                 waNotice.style.display = "block";
                 waNotice.href = `https://wa.me/?text=${encodeURIComponent('¡Nuevo recuerdo en nuestra App! 📸 ' + window.location.href)}`;
-                
                 alert("✅ ¡Foto publicada!");
             }
         } catch (err) { alert("❌ Error: " + err.message); } 
-        finally { labelPost.innerHTML = "✨ SUBIR NUEVO RECUERDO"; }
+        finally { 
+            // ESTO ARREGLA EL BOTÓN SÍ O SÍ
+            labelPost.innerHTML = "✨ SUBIR NUEVO RECUERDO"; 
+            fotoInput.value = "";
+        }
     };
 
     async function compressImage(file) {
@@ -172,24 +166,21 @@
     }
 
     window.darLike = async (id) => await updateDoc(doc(db, "mensajes", id), { likes: increment(1) });
-    
     window.enviarComentario = async (id) => {
         const input = document.getElementById(`input-${id}`);
-        const nombre = getNombreUsuario();
+        const nombre = getNombre();
         if (!input.value || !nombre) return;
         await updateDoc(doc(db, "mensajes", id), { comentarios: arrayUnion({ autor: nombre, texto: input.value }) });
         input.value = "";
     };
-    
     window.borrarPost = async (id) => {
-        if(confirm("⚠️ ¿Sheriff Tico, borrar este recuerdo?")) await deleteDoc(doc(db, "mensajes", id));
+        if(confirm("⚠️ ¿Borrar este recuerdo?")) await deleteDoc(doc(db, "mensajes", id));
     };
 
     const q = query(collection(db, "mensajes"), orderBy("fecha", "desc"));
     onSnapshot(q, (snapshot) => {
         muro.innerHTML = "";
         const esAdmin = localStorage.getItem('familia_auth') === "ticoadmin2026";
-        
         snapshot.forEach((snapshotDoc) => {
             const data = snapshotDoc.data();
             const id = snapshotDoc.id;
