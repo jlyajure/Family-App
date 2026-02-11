@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yajure App - V2.0</title>
-    
-    <link rel="manifest" href="manifest.json">
+    <title>Yajure App - V2.1</title> <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/emoji/32/000000/house-with-garden.png">
     <link rel="apple-touch-icon" href="https://img.icons8.com/emoji/160/000000/house-with-garden.png">
     <meta name="mobile-web-app-capable" content="yes">
@@ -30,7 +28,8 @@
         .container { max-width: 480px; margin: auto; padding: 20px 15px; }
         .btn-post { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 16px; border-radius: 18px; font-weight: 700; cursor: pointer; font-size: 16px; margin-bottom: 20px; display: block; text-align: center; }
 
-        #wa-notice { display: none; background: var(--wa-green); color: white; padding: 15px; border-radius: 20px; text-align: center; font-weight: 800; text-decoration: none; margin-bottom: 25px; }
+        /* BARRA WHATSAPP */
+        #wa-notice { display: none; background: var(--wa-green); color: white; padding: 15px; border-radius: 20px; text-align: center; font-weight: 800; text-decoration: none; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3); }
 
         .post { background: white; border-radius: 28px; padding: 20px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); color: #1e293b; position: relative; }
         .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -84,13 +83,10 @@
     const labelPost = document.getElementById('labelPost');
     const fotoInput = document.getElementById('fotoInput');
 
-    const checkLogin = () => {
-        if(localStorage.getItem('familia_auth')) {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-content').style.display = 'block';
-        }
-    };
-    checkLogin();
+    if(localStorage.getItem('familia_auth')) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app-content').style.display = 'block';
+    }
 
     const getNombre = () => {
         let n = localStorage.getItem('user_n');
@@ -132,14 +128,19 @@
                 await addDoc(collection(db, "mensajes"), {
                     texto: mensaje || "", foto: imgData.data.url, autor: nombre, fecha: new Date(), likes: 0, comentarios: []
                 });
+                
+                // --- ARREGLO INSTANTÁNEO ---
+                labelPost.innerHTML = "✨ SUBIR NUEVO RECUERDO"; 
                 waNotice.style.display = "block";
                 waNotice.href = `https://wa.me/?text=${encodeURIComponent('¡Nuevo recuerdo en nuestra App! 📸 ' + window.location.href)}`;
-                alert("✅ ¡Foto publicada!");
+                
+                // Ponemos el alert al final para que no bloquee los cambios visuales
+                setTimeout(() => alert("✅ ¡Foto publicada!"), 100);
             }
-        } catch (err) { alert("❌ Error: " + err.message); } 
-        finally { 
-            // ESTO ARREGLA EL BOTÓN SÍ O SÍ
-            labelPost.innerHTML = "✨ SUBIR NUEVO RECUERDO"; 
+        } catch (err) { 
+            alert("❌ Error: " + err.message); 
+            labelPost.innerHTML = "✨ SUBIR NUEVO RECUERDO";
+        } finally {
             fotoInput.value = "";
         }
     };
