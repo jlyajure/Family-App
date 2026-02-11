@@ -3,52 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Familia Yajure</title>
+    <title>Familia Yajure - Privado</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; }
+        /* Pantalla de Bloqueo */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #4267B2; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
+        #login-screen input { padding: 12px; border-radius: 8px; border: none; margin-top: 15px; width: 200px; text-align: center; font-size: 18px; }
+        
+        /* App Principal (oculta al inicio) */
+        #app-content { display: none; }
+        
         header { background: #4267B2; color: white; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; position: sticky; top: 0; z-index: 100; }
         .container { max-width: 500px; margin: auto; padding: 15px; }
         .post { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .post img { width: 100%; border-radius: 8px; margin-top: 10px; }
-        .btn-post { background: #42b72a; color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-bottom: 20px; }
+        .btn-post { background: #42b72a; color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-bottom: 20px; display: block; text-align: center; }
         input[type="file"] { display: none; }
     </style>
 </head>
 <body>
 
-<header>📸 Familia Yajure</header>
+<div id="login-screen">
+    <h2>🏠 Espacio Privado</h2>
+    <p>Introduce la clave familiar:</p>
+    <input type="password" id="passInput" placeholder="Clave secreta">
+    <p id="error-msg" style="color: #ffcccc; margin-top: 10px; display: none;">Clave incorrecta</p>
+</div>
 
-<div class="container">
-    <label for="fotoInput" class="btn-post" style="display: block; text-align: center;">+ Subir Foto Familiar</label>
-    <input type="file" id="fotoInput" accept="image/*">
-    <div id="muro"><p style="text-align: center; color: gray;">Cargando momentos...</p></div>
+<div id="app-content">
+    <header>📸 Familia Yajure</header>
+    <div class="container">
+        <label for="fotoInput" class="btn-post">+ Subir Foto Familiar</label>
+        <input type="file" id="fotoInput" accept="image/*">
+        <div id="muro"><p style="text-align: center; color: gray;">Cargando momentos...</p></div>
+    </div>
 </div>
 
 <script type="module">
     import { db } from "./firebase.js";
     import { collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    // --- CONFIGURACIÓN DE SEGURIDAD ---
+    const CLAVE_CORRECTA = "familia2026"; // <--- PUEDES CAMBIAR ESTA CLAVE
+    const loginScreen = document.getElementById('login-screen');
+    const appContent = document.getElementById('app-content');
+    const passInput = document.getElementById('passInput');
+
+    // Verificar si ya entró antes
+    if(localStorage.getItem('familia_auth') === 'true') {
+        loginScreen.style.display = 'none';
+        appContent.style.display = 'block';
+    }
+
+    passInput.oninput = () => {
+        if(passInput.value.toLowerCase() === CLAVE_CORRECTA) {
+            localStorage.setItem('familia_auth', 'true');
+            loginScreen.style.fadeOut = "slow";
+            setTimeout(() => {
+                loginScreen.style.display = 'none';
+                appContent.style.display = 'block';
+            }, 300);
+        }
+    };
+
+    // --- LÓGICA DE LA APP (Tico, mantén tu llave de ImgBB abajo) ---
+    const IMGBB_KEY = "TU_LLAVE_AQUI"; // <--- NO OLVIDES PEGAR TU LLAVE DE NUEVO
     const fotoInput = document.getElementById('fotoInput');
     const muro = document.getElementById('muro');
-    const IMGBB_KEY = "07dd4f0a1180673510c5047ae8b5eec8"; // <-- PEGA TU LLAVE AQUÍ
 
     fotoInput.onchange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
-        const mensaje = prompt("Escribe algo sobre esta foto:");
-        
-        // 1. Subir foto a ImgBB
+        const mensaje = prompt("¿Qué quieres decir sobre esta foto?");
         const formData = new FormData();
         formData.append("image", file);
-        
-        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
-            method: "POST",
-            body: formData
-        });
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: formData });
         const imgData = await res.json();
-        
-        // 2. Guardar link en Firebase
         if (imgData.success) {
             await addDoc(collection(db, "mensajes"), {
                 texto: mensaje || "",
