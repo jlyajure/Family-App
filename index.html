@@ -8,6 +8,7 @@
     <style>
         :root {
             --accent-blue: #3b82f6;
+            /* Fondo oscuro para el interior */
             --dark-bg: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
         }
 
@@ -19,19 +20,43 @@
             color: #f8fafc;
         }
 
-        /* --- PANTALLA DE ENTRADA (EL ATARDECER) --- */
+        /* --- PANTALLA DE ENTRADA (ATARDECER) --- */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: url('https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=2070') no-repeat center center/cover;
             display: flex; align-items: center; justify-content: center; z-index: 1000;
         }
-        #login-screen::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); }
+        /* Capa oscura sobre la imagen para más contraste */
+        #login-screen::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); }
 
+        /* TARJETA DE CRISTAL OSCURO */
         .login-card {
-            position: relative; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px);
-            padding: 40px 30px; border-radius: 35px; text-align: center; max-width: 340px; width: 85%;
+            position: relative;
+            /* Fondo negro semitransparente */
+            background: rgba(0, 0, 0, 0.6);
+            /* Efecto de desenfoque (cristal) */
+            backdrop-filter: blur(20px);
+            /* Borde fino y claro para definir */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 45px 35px; border-radius: 35px; text-align: center; max-width: 340px; width: 85%;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
+
+        /* Estilos para el texto dentro de la tarjeta oscura */
+        .login-card h2 { color: white; margin: 0 0 10px 0; font-size: 24px; }
+        .login-card p { color: rgba(255, 255, 255, 0.8); font-size: 15px; margin-bottom: 30px; }
+
+        /* Input de cristal oscuro */
+        #passInput { 
+            width: 100%; padding: 16px; 
+            background: rgba(255, 255, 255, 0.1); 
+            border: 2px solid rgba(255, 255, 255, 0.2); 
+            border-radius: 18px; font-size: 18px; text-align: center; outline: none; color: white;
+            transition: 0.3s;
+        }
+        #passInput:focus { border-color: var(--accent-blue); background: rgba(255, 255, 255, 0.15); }
+        #passInput::placeholder { color: rgba(255, 255, 255, 0.6); }
+
 
         /* --- INTERIOR DE LA APP (AZUL NOCHE) --- */
         #app-content { display: none; }
@@ -71,7 +96,6 @@
         .post-text { font-size: 16px; line-height: 1.5; margin: 0; }
         .post img { width: 100%; border-radius: 22px; margin-top: 15px; display: block; }
 
-        #passInput { width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 18px; font-size: 17px; text-align: center; outline: none; }
         input[type="file"] { display: none; }
     </style>
 </head>
@@ -79,9 +103,9 @@
 
 <div id="login-screen">
     <div class="login-card">
-        <div style="font-size: 45px; margin-bottom: 15px;">🌅</div>
-        <h2 style="margin: 0 0 8px 0; font-size: 22px;">Bienvenido a Nuestros Recuerdos</h2>
-        <p style="color: #64748b; font-size: 14px; margin-bottom: 30px;">Familia Yajure</p>
+        <div style="font-size: 50px; margin-bottom: 15px;">🌅</div>
+        <h2>Bienvenido a Nuestros Recuerdos</h2>
+        <p>Familia Yajure</p>
         <input type="password" id="passInput" placeholder="Clave de acceso">
     </div>
 </div>
