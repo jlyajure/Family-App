@@ -7,80 +7,72 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --sunset-grad: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-            --vibrant-grad: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+            --bg-dark: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            --accent-blue: #3b82f6; /* Azul moderno para el botón */
         }
 
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             margin: 0; min-height: 100vh;
-            /* FONDO CON VIDA: Un atardecer suave que no cansa la vista */
-            background: #fdfbfb;
-            background-image: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            background: var(--bg-dark);
             background-attachment: fixed;
-            color: #2d3436;
+            color: #f8fafc;
         }
 
-        /* --- PANTALLA DE ENTRADA (ATARDECER REAL) --- */
+        /* --- ENTRADA --- */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=2070') no-repeat center center/cover;
+            background: var(--bg-dark);
             display: flex; align-items: center; justify-content: center; z-index: 1000;
         }
-        #login-screen::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); }
-
         .login-card {
-            position: relative; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px);
-            padding: 45px 30px; border-radius: 40px; text-align: center; max-width: 340px; width: 85%;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px);
+            padding: 40px 30px; border-radius: 35px; text-align: center; max-width: 320px; width: 85%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* --- INTERIOR DE LA APP --- */
+        /* --- INTERIOR --- */
         #app-content { display: none; }
         
         header { 
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px);
             padding: 15px 20px; position: sticky; top: 0; z-index: 100;
             display: flex; justify-content: center; align-items: center;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        .header-title { font-weight: 800; font-size: 22px; color: #d35400; margin: 0; letter-spacing: -1px; }
+        .header-title { font-weight: 800; font-size: 20px; color: white; margin: 0; }
         
-        /* NUEVO BOTÓN SALIR: Mucho más estético */
         .btn-logout { 
             position: absolute; right: 20px; 
-            background: #fff; color: #e17055; 
-            border: 1.5px solid #fab1a0; padding: 8px 16px; border-radius: 15px; 
-            font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.3s;
-            box-shadow: 0 4px 10px rgba(225, 112, 85, 0.1);
+            background: rgba(255,255,255,0.1); color: #94a3b8; 
+            border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 12px; 
+            font-size: 11px; font-weight: 700; cursor: pointer;
         }
-        .btn-logout:hover { background: #ff7675; color: white; border-color: #ff7675; }
 
-        .container { max-width: 480px; margin: auto; padding: 30px 20px; }
+        .container { max-width: 480px; margin: auto; padding: 25px 15px; }
 
-        /* Botón Subir: Con degradado para que resalte */
+        /* NUEVO BOTÓN: Azul Eléctrico Moderno */
         .btn-post { 
-            background: linear-gradient(135deg, #00b894, #55efc4);
+            background: var(--accent-blue);
             color: white; border: none; width: 100%; 
-            padding: 20px; border-radius: 25px; font-weight: 800; cursor: pointer; 
-            font-size: 16px; margin-bottom: 35px; display: block; text-align: center;
-            box-shadow: 0 15px 30px rgba(0, 184, 148, 0.3); transition: 0.3s;
+            padding: 18px; border-radius: 20px; font-weight: 700; cursor: pointer; 
+            font-size: 16px; margin-bottom: 30px; display: block; text-align: center;
+            /* Sombra de luz azul */
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4); 
+            transition: 0.3s;
         }
-        .btn-post:active { transform: scale(0.97); }
+        .btn-post:active { transform: scale(0.97); box-shadow: none; }
 
-        /* Tarjetas de Fotos Premium */
+        /* Tarjetas de Fotos */
         .post { 
-            background: white; border-radius: 35px; padding: 22px; margin-bottom: 30px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.5);
-            animation: fadeIn 0.5s ease-in;
+            background: white; border-radius: 25px; padding: 20px; margin-bottom: 25px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); color: #1e293b;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .post-author { font-weight: 800; color: var(--accent-blue); font-size: 14px; margin-bottom: 10px; }
+        .post-text { font-size: 16px; line-height: 1.5; margin: 0; }
+        .post img { width: 100%; border-radius: 20px; margin-top: 15px; display: block; }
 
-        .post-author { font-weight: 800; color: #e67e22; font-size: 14px; margin-bottom: 8px; }
-        .post-text { font-size: 17px; line-height: 1.5; color: #2d3436; font-weight: 400; }
-        .post img { width: 100%; border-radius: 25px; margin-top: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-
-        #passInput { width: 100%; padding: 18px; border: 2px solid #eee; border-radius: 20px; font-size: 18px; text-align: center; outline: none; }
+        #passInput { width: 100%; padding: 15px; border: 2px solid rgba(255,255,255,0.2); border-radius: 20px; background: rgba(255,255,255,0.1); color: white; text-align: center; font-size: 17px; outline: none; }
         input[type="file"] { display: none; }
     </style>
 </head>
@@ -88,9 +80,9 @@
 
 <div id="login-screen">
     <div class="login-card">
-        <div style="font-size: 50px; margin-bottom: 15px;">🌅</div>
-        <h2 style="margin: 0 0 10px 0; font-size: 24px;">Bienvenido a Nuestros Recuerdos</h2>
-        <p style="color:#636e72; font-size: 15px; margin-bottom: 30px;">Familia Yajure</p>
+        <div style="font-size: 40px; margin-bottom: 15px;">🏡</div>
+        <h2 style="margin: 0 0 10px 0; color: white;">Bienvenido a Nuestros Recuerdos</h2>
+        <p style="color: rgba(255,255,255,0.7); font-size: 14px; margin-bottom: 30px;">Familia Yajure</p>
         <input type="password" id="passInput" placeholder="Introduce la clave">
     </div>
 </div>
@@ -98,10 +90,10 @@
 <div id="app-content">
     <header>
         <h1 class="header-title">Familia Yajure</h1>
-        <button class="btn-logout" id="btnLogout">Cerrar Sesión 🔓</button>
+        <button class="btn-logout" id="btnLogout">Salir 🔒</button>
     </header>
     <div class="container">
-        <label for="fotoInput" class="btn-post">✨ COMPARTIR UN MOMENTO</label>
+        <label for="fotoInput" class="btn-post">✨ SUBIR NUEVO RECUERDO</label>
         <input type="file" id="fotoInput" accept="image/*">
         <div id="muro"></div>
     </div>
@@ -142,7 +134,7 @@
     fotoInput.onchange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        const mensaje = prompt("¿Qué historia cuenta esta foto?");
+        const mensaje = prompt("¿Qué quieres escribir en esta foto?");
         const formData = new FormData();
         formData.append("image", file);
         try {
@@ -156,7 +148,7 @@
                     fecha: new Date()
                 });
             }
-        } catch (error) { alert("Error al subir."); }
+        } catch (e) { alert("Error al subir."); }
     };
 
     const q = query(collection(db, "mensajes"), orderBy("fecha", "desc"));
