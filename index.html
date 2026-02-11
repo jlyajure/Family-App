@@ -3,30 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuestra Familia Yajure</title>
+    <title>Familia Yajure</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; text-align: center; }
-        header { background: #4267B2; color: white; padding: 20px; font-size: 24px; font-weight: bold; }
-        .feed { max-width: 500px; margin: 20px auto; padding: 10px; }
-        .post { background: white; border-radius: 8px; margin-bottom: 20px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .post img { width: 100%; border-radius: 5px; }
-        .btn-subir { background: #42b72a; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; }
+        header { background: #4267B2; color: white; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; position: sticky; top: 0; }
+        .container { max-width: 500px; margin: auto; padding: 15px; }
+        .post { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-post { background: #42b72a; color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-    <header>📸 Familia Yajure</header>
+<header>📸 Familia Yajure</header>
 
-    <div class="feed">
-        <button class="btn-subir">+ Subir Foto Familiar</button>
-        
-        <div class="post">
-            <p><strong>Tico:</strong> ¡Bienvenidos a nuestra nueva App!</p>
-            <div style="background: #ddd; height: 200px; display: flex; align-items: center; justify-content: center; color: #666;">
-                Aquí irá la primera foto familiar
-            </div>
-        </div>
+<div class="container">
+    <button class="btn-post" id="btnCompartir">+ Compartir un momento</button>
+    <div id="muro">
+        <p style="text-align: center; color: gray;">Cargando momentos familiares...</p>
     </div>
+</div>
+
+<script type="module">
+    import { db } from "./firebase.js";
+    import { collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const btn = document.getElementById('btnCompartir');
+    const muro = document.getElementById('muro');
+
+    // Función para escribir en la base de datos
+    btn.onclick = async () => {
+        const mensaje = prompt("¿Qué quieres decirle a la familia?");
+        if (mensaje) {
+            await addDoc(collection(db, "mensajes"), {
+                texto: mensaje,
+                autor: "Tico",
+                fecha: new Date()
+            });
+        }
+    };
+
+    // Función para leer la base de datos en tiempo real
+    const q = query(collection(db, "mensajes"), orderBy("fecha", "desc"));
+    onSnapshot(q, (snapshot) => {
+        muro.innerHTML = "";
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            muro.innerHTML += `
+                <div class="post">
+                    <p><strong>${data.autor}:</strong></p>
+                    <p>${data.texto}</p>
+                </div>
+            `;
+        });
+    });
+</script>
 
 </body>
 </html>
