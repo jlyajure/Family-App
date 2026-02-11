@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Álbum Familiar</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 300px;
+        }
+        h1 { color: #333; margin-bottom: 20px; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box; 
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #0095f6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background-color: #007bb5; }
+        .error { color: red; font-size: 14px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h1>❤️ Familia</h1>
+        <p>Ingresa la clave secreta</p>
+        
+        <input type="password" id="passwordInput" placeholder="Contraseña...">
+        <button onclick="checkPassword()">Entrar</button>
+        <p id="errorMsg" class="error">Clave incorrecta 🚫</p>
+    </div>
+
+    <script>
+        function checkPassword() {
+            const pass = document.getElementById('passwordInput').value;
+            // AQUÍ PONDREMOS LA CLAVE LUEGO
+            if(pass === "familia123") {
+                alert("¡Bienvenido a la familia! 🏠");
+                // Aquí luego redirigiremos a las fotos
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        }
+    </script>
+
+</body>
+</html>
