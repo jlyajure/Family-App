@@ -6,75 +6,40 @@
     <title>Familia Yajure - Recuerdos</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --accent-blue: #3b82f6;
-            --dark-bg: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-        }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            margin: 0; min-height: 100vh;
-            background: var(--dark-bg);
-            background-attachment: fixed;
-            color: #f8fafc;
-        }
-
-        /* --- PANTALLA DE ENTRADA (CRISTAL OSCURO) --- */
-        #login-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=2070') no-repeat center center/cover;
-            display: flex; align-items: center; justify-content: center; z-index: 1000;
-        }
+        :root { --accent-blue: #3b82f6; --dark-bg: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; min-height: 100vh; background: var(--dark-bg); background-attachment: fixed; color: #f8fafc; }
+        
+        /* --- PANTALLA DE ENTRADA --- */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=2070') no-repeat center center/cover; display: flex; align-items: center; justify-content: center; z-index: 1000; }
         #login-screen::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); }
-
-        .login-card {
-            position: relative; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 45px 35px; border-radius: 35px; text-align: center; max-width: 340px; width: 85%;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-        }
-        .login-card h2 { color: white; margin: 0 0 10px 0; font-size: 24px; }
-        .login-card p { color: rgba(255, 255, 255, 0.8); margin-bottom: 30px; }
-
+        .login-card { position: relative; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); padding: 45px 35px; border-radius: 35px; text-align: center; max-width: 340px; width: 85%; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        
         /* --- INTERIOR --- */
         #app-content { display: none; }
-        
-        header { 
-            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(15px);
-            padding: 15px 20px; position: sticky; top: 0; z-index: 100;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
+        header { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(15px); padding: 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .header-title { font-weight: 800; font-size: 18px; color: white; margin: 0; }
-        
         .btn-logout { background: rgba(255,255,255,0.1); color: #94a3b8; border: 1px solid rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
-
         .container { max-width: 480px; margin: auto; padding: 25px 15px; }
 
-        /* Filtro de Miembros */
-        .filter-section {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px; border-radius: 20px; margin-bottom: 20px;
-            display: flex; align-items: center; justify-content: space-between;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .filter-label { font-size: 13px; font-weight: 600; color: #94a3b8; }
-        #memberFilter {
-            background: #1e293b; color: white; border: 1px solid #334155;
-            padding: 8px 12px; border-radius: 10px; outline: none; font-size: 14px;
-        }
+        .btn-post { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 18px; border-radius: 22px; font-weight: 700; cursor: pointer; font-size: 16px; margin-bottom: 30px; display: block; text-align: center; box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4); }
 
-        .btn-post { 
-            background: var(--accent-blue); color: white; border: none; width: 100%; 
-            padding: 18px; border-radius: 22px; font-weight: 700; cursor: pointer; 
-            font-size: 16px; margin-bottom: 30px; display: block; text-align: center;
-            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
-        }
-
+        /* --- TARJETAS DE POSTS --- */
         .post { background: white; border-radius: 28px; padding: 20px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); color: #1e293b; }
-        .post-author { font-weight: 800; color: var(--accent-blue); font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
-        .post-text { font-size: 16px; line-height: 1.5; margin: 0; }
-        .post img { width: 100%; border-radius: 22px; margin-top: 15px; display: block; }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .post-author { font-weight: 800; color: var(--accent-blue); font-size: 14px; }
+        .post-date { font-size: 11px; color: #94a3b8; }
+        .post img { width: 100%; border-radius: 20px; margin-top: 10px; display: block; }
+        
+        /* Reacciones y Comentarios */
+        .post-actions { display: flex; align-items: center; gap: 15px; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 10px; }
+        .btn-like { background: #fff5f5; color: #ff4757; border: 1px solid #ffecec; padding: 6px 12px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 14px; }
+        
+        .comments-section { margin-top: 15px; background: #f8fafc; padding: 10px; border-radius: 15px; }
+        .comment { font-size: 13px; margin-bottom: 5px; border-bottom: 1px solid #edf2f7; padding-bottom: 3px; }
+        .comment b { color: var(--accent-blue); }
+        .comment-input-group { display: flex; gap: 8px; margin-top: 10px; }
+        .comment-input { flex: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px; font-size: 13px; outline: none; }
+        .btn-send-comment { background: var(--accent-blue); color: white; border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 12px; }
 
         #passInput { width: 100%; padding: 16px; border: 2px solid rgba(255,255,255,0.2); border-radius: 18px; background: rgba(255,255,255,0.1); color: white; text-align: center; font-size: 18px; outline: none; }
         input[type="file"] { display: none; }
@@ -98,23 +63,15 @@
     </header>
     
     <div class="container">
-        <div class="filter-section">
-            <span class="filter-label">Ver recuerdos de:</span>
-            <select id="memberFilter">
-                <option value="todos">Toda la Familia</option>
-                </select>
-        </div>
-
         <label for="fotoInput" class="btn-post">✨ SUBIR NUEVO RECUERDO</label>
         <input type="file" id="fotoInput" accept="image/*">
-        
         <div id="muro"></div>
     </div>
 </div>
 
 <script type="module">
     import { db } from "./firebase.js";
-    import { collection, addDoc, query, orderBy, onSnapshot, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { collection, addDoc, query, orderBy, onSnapshot, updateDoc, doc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const CLAVE_CORRECTA = "familia2026"; 
     const IMGBB_KEY = "07dd4f0a1180673510c5047ae8b5eec8"; 
@@ -122,35 +79,32 @@
     const loginScreen = document.getElementById('login-screen');
     const appContent = document.getElementById('app-content');
     const passInput = document.getElementById('passInput');
-    const btnLogout = document.getElementById('btnLogout');
-    const memberFilter = document.getElementById('memberFilter');
     const muro = document.getElementById('muro');
 
-    // Acceso
     if(localStorage.getItem('familia_auth') === 'true') {
         loginScreen.style.display = 'none';
         appContent.style.display = 'block';
     }
+
     passInput.oninput = () => {
         if(passInput.value.toLowerCase() === CLAVE_CORRECTA) {
             localStorage.setItem('familia_auth', 'true');
             location.reload();
         }
     };
-    btnLogout.onclick = () => {
+
+    document.getElementById('btnLogout').onclick = () => {
         localStorage.removeItem('familia_auth');
         location.reload();
     };
 
-    // Subir foto con identificación
+    // SUBIR POST
     document.getElementById('fotoInput').onchange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        
-        const nombre = prompt("👤 ¿Quién eres? (Tu nombre):");
+        const nombre = prompt("👤 Tu nombre:");
         if (!nombre) return;
-        
-        const mensaje = prompt("✍️ Cuéntanos sobre esta foto (quiénes aparecen o qué pasó):");
+        const mensaje = prompt("✍️ Cuéntanos sobre esta foto:");
         
         const formData = new FormData();
         formData.append("image", file);
@@ -162,63 +116,69 @@
                 await addDoc(collection(db, "mensajes"), {
                     texto: mensaje || "",
                     foto: imgData.data.url,
-                    autor: nombre, // Guardamos el nombre real
-                    fecha: new Date()
+                    autor: nombre,
+                    fecha: new Date(),
+                    likes: 0,
+                    comentarios: []
                 });
             }
         } catch (e) { alert("Error al subir."); }
     };
 
-    // Función para cargar el muro (Normal o Filtrado)
-    let unsubscribe;
-    function cargarMuro(filtroNombre = "todos") {
-        if (unsubscribe) unsubscribe(); // Detener escucha anterior
-
-        let q;
-        if (filtroNombre === "todos") {
-            q = query(collection(db, "mensajes"), orderBy("fecha", "desc"));
-        } else {
-            q = query(collection(db, "mensajes"), where("autor", "==", filtroNombre), orderBy("fecha", "desc"));
-        }
-
-        unsubscribe = onSnapshot(q, (snapshot) => {
-            muro.innerHTML = "";
-            const nombresUnicos = new Set();
-
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                nombresUnicos.add(data.autor);
-                
-                muro.innerHTML += `
-                    <div class="post">
-                        <div class="post-author">👤 ${data.autor}</div>
-                        <div class="post-text">${data.texto}</div>
-                        ${data.foto ? `<img src="${data.foto}" loading="lazy">` : ""}
-                    </div>`;
-            });
-
-            // Actualizar el selector de nombres solo si estamos en vista "todos"
-            if (filtroNombre === "todos") {
-                actualizarSelector(nombresUnicos);
-            }
-        });
-    }
-
-    function actualizarSelector(nombres) {
-        const valorActual = memberFilter.value;
-        memberFilter.innerHTML = '<option value="todos">Toda la Familia</option>';
-        nombres.forEach(nombre => {
-            memberFilter.innerHTML += `<option value="${nombre}">${nombre}</option>`;
-        });
-        memberFilter.value = valorActual;
-    }
-
-    memberFilter.onchange = (e) => {
-        cargarMuro(e.target.value);
+    // FUNCIONES DE INTERACCIÓN
+    window.darLike = async (postId) => {
+        const postRef = doc(db, "mensajes", postId);
+        await updateDoc(postRef, { likes: increment(1) });
     };
 
-    // Iniciar
-    cargarMuro();
+    window.enviarComentario = async (postId) => {
+        const input = document.getElementById(`input-${postId}`);
+        const nombre = prompt("👤 Tu nombre para el comentario:");
+        if (!input.value || !nombre) return;
+
+        const postRef = doc(db, "mensajes", postId);
+        await updateDoc(postRef, {
+            comentarios: arrayUnion({ autor: nombre, texto: input.value })
+        });
+        input.value = "";
+    };
+
+    // RENDERIZAR MURO
+    const q = query(collection(db, "mensajes"), orderBy("fecha", "desc"));
+    onSnapshot(q, (snapshot) => {
+        muro.innerHTML = "";
+        snapshot.forEach((snapshotDoc) => {
+            const data = snapshotDoc.data();
+            const id = snapshotDoc.id;
+            const fechaFormateada = data.fecha ? data.fecha.toDate().toLocaleDateString('es-ES', { day:'numeric', month:'short' }) : "";
+
+            let comentariosHtml = data.comentarios ? data.comentarios.map(c => `
+                <div class="comment"><b>${c.autor}:</b> ${c.texto}</div>
+            `).join('') : "";
+
+            muro.innerHTML += `
+                <div class="post">
+                    <div class="post-header">
+                        <span class="post-author">👤 ${data.autor}</span>
+                        <span class="post-date">${fechaFormateada}</span>
+                    </div>
+                    <div class="post-text">${data.texto}</div>
+                    ${data.foto ? `<img src="${data.foto}" loading="lazy">` : ""}
+                    
+                    <div class="post-actions">
+                        <button class="btn-like" onclick="darLike('${id}')">❤️ ${data.likes || 0}</button>
+                    </div>
+
+                    <div class="comments-section">
+                        ${comentariosHtml}
+                        <div class="comment-input-group">
+                            <input type="text" id="input-${id}" class="comment-input" placeholder="Escribe un comentario...">
+                            <button class="btn-send-comment" onclick="enviarComentario('${id}')">Enviar</button>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    });
 </script>
 </body>
 </html>
