@@ -3,27 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yajure App - V2.3</title>
+    <title>Yajure App - V2.4</title>
+    
+    <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/emoji/32/000000/house-with-garden.png">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/emoji/160/000000/house-with-garden.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; }
         :root { --accent-blue: #3b82f6; --dark-bg: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); --wa-green: #25d366; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; min-height: 100vh; background: var(--dark-bg); background-attachment: fixed; color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; min-height: 100vh; background: var(--dark-bg); background-attachment: fixed; color: #f8fafc; }
+        
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=2070') no-repeat center center/cover; display: flex; align-items: flex-start; justify-content: center; z-index: 1000; padding-top: 100px; }
         #login-screen::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
         .login-card { position: relative; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(20px); padding: 40px 25px; border-radius: 35px; text-align: center; max-width: 320px; width: 90%; }
         #passInput { width: 100%; padding: 18px; border: 2px solid rgba(255,255,255,0.2); border-radius: 20px; background: rgba(255,255,255,0.1); color: white; text-align: center; outline: none; }
+        
         #app-content { display: none; padding-bottom: 40px; }
         header { background: rgba(15, 23, 42, 0.9); padding: 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
         .btn-logout { background: rgba(255,255,255,0.1); color: #94a3b8; border: 1px solid rgba(255,255,255,0.2); padding: 10px 16px; border-radius: 12px; cursor: pointer; }
+        
         .container { max-width: 480px; margin: auto; padding: 20px 15px; }
         .btn-post { background: var(--accent-blue); color: white; padding: 16px; border-radius: 18px; font-weight: 700; cursor: pointer; display: block; text-align: center; margin-bottom: 20px; }
-        #wa-notice { display: none; background: var(--wa-green); color: white; padding: 18px; border-radius: 22px; text-align: center; font-weight: 800; text-decoration: none; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(37,211,102,0.4); }
-        .post { background: white; border-radius: 28px; padding: 20px; margin-bottom: 25px; color: #1e293b; }
+        #wa-notice { display: none; background: var(--wa-green); color: white; padding: 18px; border-radius: 22px; text-align: center; font-weight: 800; text-decoration: none; margin-bottom: 25px; }
+        
+        .post { background: white; border-radius: 28px; padding: 20px; margin-bottom: 25px; color: #1e293b; position: relative; }
         .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: 800; color: var(--accent-blue); }
-        .btn-delete-admin { background: #ff4757; color: white; border: none; padding: 8px 12px; border-radius: 12px; cursor: pointer; }
+        .btn-delete-admin { background: #ff4757; color: white; border: none; padding: 8px 12px; border-radius: 12px; cursor: pointer; font-size: 14px; }
         .post img { width: 100%; border-radius: 20px; margin: 10px 0; display: block; }
-        .btn-like { background: #fff5f5; color: #ff4757; border: 1px solid #ffecec; padding: 10px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; text-align: left; }
     </style>
 </head>
 <body>
@@ -31,7 +38,7 @@
 <div id="login-screen">
     <div class="login-card">
         <h2>Hola Tico</h2>
-        <p>Escribe la clave</p>
+        <p style="color: #cbd5e1;">Escribe la clave para entrar</p>
         <input type="password" id="passInput">
     </div>
 </div>
@@ -51,11 +58,14 @@
 
 <script type="module">
     import { db } from "./firebase.js";
-    import { collection, addDoc, query, orderBy, onSnapshot, updateDoc, doc, arrayUnion, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const CLAVE_NORMAL = "familia2026";
     const CLAVE_ADMIN = "ticoadmin2026";
     const IMGBB_KEY = "07dd4f0a1180673510c5047ae8b5eec8"; 
+
+    const btn = document.getElementById('labelPost');
+    const wa = document.getElementById('wa-notice');
 
     if(localStorage.getItem('familia_auth')) {
         document.getElementById('login-screen').style.display = 'none';
@@ -78,33 +88,33 @@
         const nombre = prompt("👤 Tu nombre:");
         const mensaje = prompt("✍️ Mensaje:");
         
-        const btn = document.getElementById('labelPost');
         btn.innerHTML = "⏳ SUBIENDO...";
         
         try {
-            // 1. Subir a ImgBB
             const formData = new FormData();
             formData.append("image", file);
             const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: formData });
             const imgData = await res.json();
             
             if (imgData.success) {
-                // 2. Intentar guardar en Firebase
+                // INTENTO DE GUARDAR EN FIREBASE
                 await addDoc(collection(db, "mensajes"), {
-                    texto: mensaje || "", foto: imgData.data.url, autor: nombre || "Anónimo", fecha: new Date(), likes: 0
+                    texto: mensaje || "", 
+                    foto: imgData.data.url, 
+                    autor: nombre || "Anónimo", 
+                    fecha: new Date()
                 });
-                
-                // 3. SI LLEGA AQUÍ, TODO BIEN:
-                btn.innerHTML = "✨ SUBIR NUEVO RECUERDO";
-                document.getElementById('wa-notice').style.display = "block";
-                document.getElementById('wa-notice').href = `https://wa.me/?text=Nuevo+recuerdo+Yajure+App!`;
-                console.log("¡Guardado con éxito!");
+                wa.style.display = "block";
+                wa.href = `https://wa.me/?text=¡Nuevo+recuerdo+en+la+App!`;
+                alert("✅ ¡Publicado con éxito!");
             }
         } catch (err) { 
-            // SI HAY ERROR, EL BOTÓN SE ARREGLA Y TE AVISA
-            btn.innerHTML = "✨ SUBIR NUEVO RECUERDO";
-            alert("❌ ERROR DE BASE DE DATOS: " + err.message); 
+            // SI FIREBASE RECHAZA LA FOTO, ESTO TE DIRÁ POR QUÉ
+            alert("❌ ERROR CRÍTICO: " + err.message); 
             console.error(err);
+        } finally {
+            btn.innerHTML = "✨ SUBIR NUEVO RECUERDO";
+            document.getElementById('fotoInput').value = "";
         }
     };
 
@@ -120,7 +130,7 @@
                 <div class="post">
                     <div class="post-header">
                         <span>👤 ${data.autor}</span>
-                        ${esAdmin ? `<button class="btn-delete-admin" onclick="window.borrarPost('${docSnap.id}')">🗑️</button>` : ""}
+                        ${esAdmin ? `<button class="btn-delete-admin" onclick="window.borrarPost('${docSnap.id}')">🗑️ Borrar</button>` : ""}
                     </div>
                     <p>${data.texto}</p>
                     <img src="${data.foto}">
@@ -129,7 +139,10 @@
     });
 
     window.borrarPost = async (id) => {
-        if(confirm("¿Borrar?")) await deleteDoc(doc(db, "mensajes", id));
+        if(confirm("¿Seguro que quieres borrar?")) {
+            try { await deleteDoc(doc(db, "mensajes", id)); } 
+            catch(e) { alert("No tienes permisos para borrar"); }
+        }
     };
 </script>
 </body>
