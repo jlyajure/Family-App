@@ -3,99 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Familia Yajure - Privado</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Familia Yajure - Álbum Privado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #007AFF;
-            --bg-color: #f8f9fc;
-            --glass: rgba(255, 255, 255, 0.85);
+            --primary: #4158D0;
+            --secondary: #C850C0;
+            --accent: #FFCC70;
+            --text: #2d3436;
         }
 
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%); 
+            /* Un fondo con degradado más rico y moderno */
+            background: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+            background-attachment: fixed;
             margin: 0; 
             min-height: 100vh;
         }
 
-        /* --- PANTALLA DE ENTRADA MODERNA --- */
+        /* --- PANTALLA DE ENTRADA --- */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=2070') no-repeat center center/cover;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(15px);
             display: flex; align-items: center; justify-content: center; z-index: 1000;
         }
-        
-        /* Capa oscura sobre la imagen de fondo */
-        #login-screen::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.3);
-        }
-
         .login-card {
-            position: relative;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            padding: 50px 30px;
-            border-radius: 32px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            text-align: center;
-            max-width: 380px;
-            width: 85%;
-            border: 1px solid rgba(255,255,255,0.3);
+            background: white; padding: 40px 30px; border-radius: 35px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3); text-align: center; max-width: 360px; width: 85%;
         }
-
-        .login-title { font-size: 28px; font-weight: 700; color: #1d1d1f; margin-bottom: 8px; }
-        .login-desc { color: #4b4b4b; font-size: 15px; margin-bottom: 30px; }
-
         #passInput {
-            width: 100%; padding: 18px; border: 1px solid #ddd; border-radius: 20px;
+            width: 100%; padding: 18px; border: 2px solid #eee; border-radius: 20px;
             font-size: 18px; text-align: center; outline: none; transition: 0.3s;
-            background: white; box-sizing: border-box;
         }
-        #passInput:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(0,122,255,0.1); }
 
-        /* --- APP PRINCIPAL --- */
+        /* --- CONTENIDO PRINCIPAL --- */
         #app-content { display: none; }
         
         header { 
-            background: var(--glass); backdrop-filter: blur(10px);
-            padding: 20px; text-align: center; font-size: 22px; font-weight: 700;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px; text-align: center;
             position: sticky; top: 0; z-index: 100;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .header-title { 
+            font-weight: 800; font-size: 24px; color: var(--primary); margin: 0;
+            letter-spacing: -1px;
         }
 
-        .container { max-width: 480px; margin: auto; padding: 20px; }
+        .container { max-width: 500px; margin: auto; padding: 25px 15px; }
 
+        /* Botón de subir flotante y moderno */
         .btn-post { 
-            background: var(--primary); color: white; border: none; width: 100%; 
-            padding: 18px; border-radius: 22px; font-weight: 700; cursor: pointer; 
-            font-size: 16px; margin-bottom: 30px; display: block; text-align: center;
-            box-shadow: 0 10px 20px -5px rgba(0,122,255,0.4);
+            background: linear-gradient(135deg, #4cd137, #44bd32);
+            color: white; border: none; width: 100%; 
+            padding: 20px; border-radius: 25px; font-weight: 700; cursor: pointer; 
+            font-size: 17px; margin-bottom: 35px; display: block; text-align: center;
+            box-shadow: 0 15px 30px rgba(76, 209, 55, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-post:active { transform: scale(0.96); }
+
+        /* Tarjetas de Fotos con efecto elegante */
+        .post { 
+            background: white; border-radius: 30px; padding: 20px; margin-bottom: 30px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.3);
+            animation: slideUp 0.5s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .post { 
-            background: white; border-radius: 28px; padding: 20px; margin-bottom: 25px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #f0f0f0;
+        .post-author { font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .post-text { font-size: 1.1em; color: var(--text); margin: 12px 0; line-height: 1.4; }
+        .post img { 
+            width: 100%; border-radius: 25px; margin-top: 10px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
-        .post img { width: 100%; border-radius: 20px; margin-top: 15px; }
+
+        input[type="file"] { display: none; }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="login-card">
-        <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
-        <h2 class="login-title">Familia Yajure</h2>
-        <p class="login-desc">Bienvenidos a nuestro espacio privado.</p>
-        <input type="password" id="passInput" placeholder="Clave familiar">
+        <h2 style="margin-top:0;">🏡 Hola Familia</h2>
+        <p style="color:#666; margin-bottom:25px;">Introduce la clave secreta</p>
+        <input type="password" id="passInput" placeholder="Clave de acceso">
     </div>
 </div>
 
 <div id="app-content">
-    <header>🏠 Familia Yajure</header>
+    <header><h1 class="header-title">📸 Familia Yajure</h1></header>
     <div class="container">
-        <label for="fotoInput" class="btn-post">+ Compartir momento</label>
+        <label for="fotoInput" class="btn-post">🚀 Compartir Nuevo Momento</label>
         <input type="file" id="fotoInput" accept="image/*">
         <div id="muro"></div>
     </div>
@@ -105,10 +108,9 @@
     import { db } from "./firebase.js";
     import { collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // --- DATOS MAESTROS (YA INTEGRADOS) ---
     const CLAVE_CORRECTA = "familia2026"; 
     const IMGBB_KEY = "07dd4f0a1180673510c5047ae8b5eec8"; 
-
+    
     const loginScreen = document.getElementById('login-screen');
     const appContent = document.getElementById('app-content');
     const passInput = document.getElementById('passInput');
@@ -131,7 +133,7 @@
     fotoInput.onchange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        const mensaje = prompt("¿Qué quieres decir sobre esta foto?");
+        const mensaje = prompt("💬 Cuéntanos la historia de esta foto:");
         const formData = new FormData();
         formData.append("image", file);
         const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: formData });
@@ -153,8 +155,8 @@
             const data = doc.data();
             muro.innerHTML += `
                 <div class="post">
-                    <p><strong>${data.autor}</strong> <span style="color:#8e8e93; font-size:0.9em;">acaba de subir:</span></p>
-                    <p style="font-size:1.1em; color:#1d1d1f;">${data.texto}</p>
+                    <div class="post-author">👤 ${data.autor}</div>
+                    <div class="post-text">${data.texto}</div>
                     ${data.foto ? `<img src="${data.foto}" loading="lazy">` : ""}
                 </div>`;
         });
