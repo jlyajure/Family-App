@@ -30,8 +30,9 @@
         .btn-logout { background: rgba(255,255,255,0.1); color: #94a3b8; border: 1px solid rgba(255,255,255,0.2); padding: 10px 16px; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
         
         .container { max-width: 480px; margin: auto; padding: 20px 15px; }
-        .btn-post { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 14px; border-radius: 18px; font-weight: 700; cursor: pointer; font-size: 16px; margin-bottom: 20px; display: block; text-align: center; box-shadow: 0 8px 15px rgba(59, 130, 246, 0.3); }
+        .btn-post { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 14px; border-radius: 18px; font-weight: 700; cursor: pointer; font-size: 16px; margin-bottom: 20px; display: block; text-align: center; }
 
+        /* BARRA WHATSAPP CORREGIDA */
         #wa-notice { display: none; background: var(--wa-green); color: white; padding: 15px; border-radius: 20px; text-align: center; font-weight: 800; text-decoration: none; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3); animation: bounce 0.5s infinite alternate; }
         @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.02); } }
 
@@ -39,13 +40,15 @@
         .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .post-author { font-weight: 800; color: var(--accent-blue); font-size: 14px; }
         .post-date { font-size: 11px; color: #94a3b8; }
-        .btn-delete-admin { display: none; background: #ff4757; color: white; border: none; padding: 5px 10px; border-radius: 10px; font-size: 12px; cursor: pointer; }
+        
+        /* PAPELERA ROJA */
+        .btn-delete-admin { background: #ff4757; color: white; border: none; padding: 8px 12px; border-radius: 12px; font-size: 14px; cursor: pointer; }
+
         .post img { width: 100%; border-radius: 20px; margin: 10px 0; display: block; }
         .btn-like { background: #fff5f5; color: #ff4757; border: 1px solid #ffecec; padding: 8px 15px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; text-align: left; }
         
         .comments-section { margin-top: 15px; background: #f8fafc; padding: 12px; border-radius: 18px; }
         .comment { font-size: 13px; margin-bottom: 6px; border-bottom: 1px solid #edf2f7; padding-bottom: 4px; }
-        .comment b { color: var(--accent-blue); }
         .comment-input-group { display: flex; gap: 8px; margin-top: 10px; }
         .comment-input { flex: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px; font-size: 13px; outline: none; }
         .btn-send-comment { background: var(--accent-blue); color: white; border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
@@ -114,7 +117,6 @@
         const mensaje = prompt("✍️ Cuéntanos sobre esta foto:");
         
         labelPost.innerHTML = "⏳ SUBIENDO...";
-        labelPost.style.opacity = "0.5";
         
         try {
             const compressedFile = await compressImage(file);
@@ -129,26 +131,15 @@
                     texto: mensaje || "", foto: imgData.data.url, autor: nombre, fecha: new Date(), likes: 0, comentarios: []
                 });
                 
-                // RESETEO DE BOTÓN ANTES DEL ALERT
+                // --- ARREGLAMOS EL BOTÓN ANTES DEL AVISO ---
                 labelPost.innerHTML = "✨ SUBIR NUEVO RECUERDO";
-                labelPost.style.opacity = "1";
-                fotoInput.value = ""; 
-
-                waNotice.href = `https://wa.me/?text=${encodeURIComponent('¡Nuevo recuerdo en nuestra App! 📸 ' + window.location.href)}`;
                 waNotice.style.display = "block";
+                waNotice.href = `https://wa.me/?text=${encodeURIComponent('¡Nuevo recuerdo en nuestra App! 📸 ' + window.location.href)}`;
                 
-                // BAJAR AUTOMÁTICAMENTE PARA VER LA FOTO
-                setTimeout(() => {
-                    window.scrollTo({ top: labelPost.offsetTop + 100, behavior: 'smooth' });
-                }, 500);
-
-                alert("✅ ¡Foto publicada! Mira abajo para verla.");
+                alert("✅ ¡Foto publicada!");
             }
-        } catch (err) { 
-            alert("❌ Error: " + err.message); 
-            labelPost.innerHTML = "✨ SUBIR NUEVO RECUERDO";
-            labelPost.style.opacity = "1";
-        }
+        } catch (err) { alert("❌ Error: " + err.message); } 
+        finally { labelPost.innerHTML = "✨ SUBIR NUEVO RECUERDO"; }
     };
 
     async function compressImage(file) {
@@ -180,14 +171,18 @@
         await updateDoc(doc(db, "mensajes", id), { comentarios: arrayUnion({ autor: nombre, texto: input.value }) });
         input.value = "";
     };
+    
+    // FUNCIÓN DE BORRADO
     window.borrarPost = async (id) => {
-        if(confirm("⚠️ ¿ Sheriff Tico, borrar para siempre?")) await deleteDoc(doc(db, "mensajes", id));
+        if(confirm("⚠️ ¿Sheriff Tico, borrar este recuerdo?")) await deleteDoc(doc(db, "mensajes", id));
     };
 
     const q = query(collection(db, "mensajes"), orderBy("fecha", "desc"));
     onSnapshot(q, (snapshot) => {
         muro.innerHTML = "";
-        const esAdmin = localStorage.getItem('familia_auth') === 'admin';
+        // --- AQUÍ ESTABA EL ERROR: Clave Admin Corregida ---
+        const esAdmin = localStorage.getItem('familia_auth') === "ticoadmin2026";
+        
         snapshot.forEach((snapshotDoc) => {
             const data = snapshotDoc.data();
             const id = snapshotDoc.id;
@@ -204,7 +199,7 @@
                         </div>
                     </div>
                     <div style="margin-bottom:10px;">${data.texto}</div>
-                    ${data.foto ? `<img src="${data.foto}" loading="lazy">` : ""}
+                    ${data.foto ? `<img src="${data.foto}">` : ""}
                     <button class="btn-like" onclick="darLike('${id}')">❤️ ${data.likes || 0}</button>
                     <div class="comments-section">${comentariosHtml}
                         <div class="comment-input-group">
