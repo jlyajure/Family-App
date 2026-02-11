@@ -2,54 +2,50 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Familia Yajure - Recuerdos</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1e293b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Yajure">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏡</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --accent-blue: #3b82f6; --dark-bg: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); --wa-green: #25d366; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; min-height: 100vh; background: var(--dark-bg); background-attachment: fixed; color: #f8fafc; }
         
-        /* --- PANTALLA DE ENTRADA --- */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=2070') no-repeat center center/cover; display: flex; align-items: center; justify-content: center; z-index: 1000; }
         #login-screen::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); }
-        .login-card { position: relative; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); padding: 45px 35px; border-radius: 35px; text-align: center; max-width: 340px; width: 85%; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .login-card { position: relative; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); padding: 45px 35px; border-radius: 35px; text-align: center; max-width: 340px; width: 85%; }
         
-        /* --- INTERIOR --- */
         #app-content { display: none; }
         header { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(15px); padding: 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .header-title { font-weight: 800; font-size: 18px; color: white; margin: 0; position: relative; }
+        .notif-dot { display: none; position: absolute; top: -5px; right: -12px; width: 10px; height: 10px; background: #ff4757; border-radius: 50%; }
         
-        /* PUNTO ROJO DE NOVEDAD */
-        .notif-dot { display: none; position: absolute; top: -5px; right: -12px; width: 10px; height: 10px; background: #ff4757; border-radius: 50%; border: 2px solid #0f172a; }
-
-        .btn-logout { background: rgba(255,255,255,0.1); color: #94a3b8; border: 1px solid rgba(255,255,255,0.2); padding: 8px 14px; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
         .container { max-width: 480px; margin: auto; padding: 25px 15px; }
+        .btn-post { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 18px; border-radius: 22px; font-weight: 700; cursor: pointer; font-size: 16px; margin-bottom: 20px; display: block; text-align: center; }
+        #wa-notice { display: none; background: var(--wa-green); color: white; padding: 15px; border-radius: 20px; text-align: center; font-weight: 800; text-decoration: none; margin-bottom: 25px; display: block; }
 
-        .btn-post { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 18px; border-radius: 22px; font-weight: 700; cursor: pointer; font-size: 16px; margin-bottom: 20px; display: block; text-align: center; box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4); }
-
-        /* BOTÓN DE WHATSAPP (Aparece al subir) */
-        #wa-notice { display: none; background: var(--wa-green); color: white; padding: 15px; border-radius: 20px; text-align: center; font-weight: 800; text-decoration: none; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3); animation: bounce 0.5s infinite alternate; }
-        @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.02); } }
-
-        /* --- TARJETAS --- */
-        .post { background: white; border-radius: 28px; padding: 20px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); color: #1e293b; }
+        .post { background: white; border-radius: 28px; padding: 20px; margin-bottom: 25px; color: #1e293b; position: relative; }
         .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .post-author { font-weight: 800; color: var(--accent-blue); font-size: 14px; }
         .post-date { font-size: 11px; color: #94a3b8; }
-        .post img { width: 100%; border-radius: 20px; margin-top: 10px; display: block; }
         
+        /* BOTÓN BORRAR (Solo para Admin) */
+        .btn-delete-admin { display: none; background: #ff4757; color: white; border: none; padding: 5px 10px; border-radius: 10px; font-size: 12px; cursor: pointer; margin-left: 10px; }
+
+        .post img { width: 100%; border-radius: 20px; margin-top: 10px; display: block; }
         .post-actions { display: flex; align-items: center; gap: 15px; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 10px; }
         .btn-like { background: #fff5f5; color: #ff4757; border: 1px solid #ffecec; padding: 6px 12px; border-radius: 10px; cursor: pointer; font-weight: 700; }
         
         .comments-section { margin-top: 15px; background: #f8fafc; padding: 10px; border-radius: 15px; }
         .comment { font-size: 13px; margin-bottom: 5px; border-bottom: 1px solid #edf2f7; padding-bottom: 3px; }
-        .comment b { color: var(--accent-blue); }
         .comment-input-group { display: flex; gap: 8px; margin-top: 10px; }
         .comment-input { flex: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px; font-size: 13px; outline: none; }
         .btn-send-comment { background: var(--accent-blue); color: white; border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
 
         #passInput { width: 100%; padding: 16px; border: 2px solid rgba(255,255,255,0.2); border-radius: 18px; background: rgba(255,255,255,0.1); color: white; text-align: center; font-size: 18px; outline: none; }
-        input[type="file"] { display: none; }
     </style>
 </head>
 <body>
@@ -68,39 +64,44 @@
         <h1 class="header-title">Familia Yajure <div id="notifDot" class="notif-dot"></div></h1>
         <button class="btn-logout" id="btnLogout">Salir 🔒</button>
     </header>
-    
     <div class="container">
         <a id="wa-notice" href="#" target="_blank">📢 ¡AVISAR A LA FAMILIA POR WHATSAPP!</a>
-
         <label for="fotoInput" class="btn-post">✨ SUBIR NUEVO RECUERDO</label>
-        <input type="file" id="fotoInput" accept="image/*">
+        <input type="file" id="fotoInput" style="display:none;" accept="image/*">
         <div id="muro"></div>
     </div>
 </div>
 
 <script type="module">
     import { db } from "./firebase.js";
-    import { collection, addDoc, query, orderBy, onSnapshot, updateDoc, doc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { collection, addDoc, query, orderBy, onSnapshot, updateDoc, doc, arrayUnion, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const CLAVE_CORRECTA = "familia2026"; 
+    const CLAVE_NORMAL = "familia2026";
+    const CLAVE_ADMIN = "ticoadmin2026"; // TU CLAVE MAESTRA
     const IMGBB_KEY = "07dd4f0a1180673510c5047ae8b5eec8"; 
-    const APP_URL = window.location.href;
     
     const loginScreen = document.getElementById('login-screen');
     const appContent = document.getElementById('app-content');
     const passInput = document.getElementById('passInput');
     const muro = document.getElementById('muro');
-    const waNotice = document.getElementById('wa-notice');
-    const notifDot = document.getElementById('notifDot');
 
-    if(localStorage.getItem('familia_auth') === 'true') {
-        loginScreen.style.display = 'none';
-        appContent.style.display = 'block';
-    }
+    // Lógica de Acceso Dual
+    const checkAuth = () => {
+        const auth = localStorage.getItem('familia_auth');
+        if(auth === 'normal' || auth === 'admin') {
+            loginScreen.style.display = 'none';
+            appContent.style.display = 'block';
+        }
+    };
+    checkAuth();
 
     passInput.oninput = () => {
-        if(passInput.value.toLowerCase() === CLAVE_CORRECTA) {
-            localStorage.setItem('familia_auth', 'true');
+        const val = passInput.value.toLowerCase();
+        if(val === CLAVE_NORMAL) {
+            localStorage.setItem('familia_auth', 'normal');
+            location.reload();
+        } else if(val === CLAVE_ADMIN) {
+            localStorage.setItem('familia_auth', 'admin');
             location.reload();
         }
     };
@@ -110,99 +111,76 @@
         location.reload();
     };
 
-    // SUBIR POST Y MOSTRAR BOTÓN WHATSAPP
+    // Subir Foto
     document.getElementById('fotoInput').onchange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
         const nombre = prompt("👤 Tu nombre:");
         if (!nombre) return;
         const mensaje = prompt("✍️ Cuéntanos sobre esta foto:");
-        
         const formData = new FormData();
         formData.append("image", file);
-        
         try {
             const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: formData });
             const imgData = await res.json();
             if (imgData.success) {
                 await addDoc(collection(db, "mensajes"), {
-                    texto: mensaje || "",
-                    foto: imgData.data.url,
-                    autor: nombre,
-                    fecha: new Date(),
-                    likes: 0,
-                    comentarios: []
+                    texto: mensaje || "", foto: imgData.data.url, autor: nombre, fecha: new Date(), likes: 0, comentarios: []
                 });
-                
-                // Opción 1: Configurar el botón de WhatsApp
-                const textoWA = encodeURIComponent(`¡Hola familia! Acabo de subir un nuevo recuerdo a nuestra App. ¡Entren a verlo! 📸✨\n\nLink aquí: ${APP_URL}`);
-                waNotice.href = `https://wa.me/?text=${textoWA}`;
-                waNotice.style.display = "block";
+                const textoWA = encodeURIComponent(`¡Hola familia! Hay un nuevo recuerdo en nuestra App. 📸✨\n\nLink: ${window.location.href}`);
+                document.getElementById('wa-notice').href = `https://wa.me/?text=${textoWA}`;
+                document.getElementById('wa-notice').style.display = "block";
             }
         } catch (e) { alert("Error al subir."); }
     };
 
-    window.darLike = async (postId) => {
-        const postRef = doc(db, "mensajes", postId);
-        await updateDoc(postRef, { likes: increment(1) });
-    };
-
-    window.enviarComentario = async (postId) => {
-        const input = document.getElementById(`input-${postId}`);
-        const nombre = prompt("👤 Tu nombre para comentar:");
+    // Funciones Globales
+    window.darLike = async (id) => await updateDoc(doc(db, "mensajes", id), { likes: increment(1) });
+    
+    window.enviarComentario = async (id) => {
+        const input = document.getElementById(`input-${id}`);
+        const nombre = prompt("👤 Tu nombre:");
         if (!input.value || !nombre) return;
-        const postRef = doc(db, "mensajes", postId);
-        await updateDoc(postRef, { comentarios: arrayUnion({ autor: nombre, texto: input.value }) });
+        await updateDoc(doc(db, "mensajes", id), { comentarios: arrayUnion({ autor: nombre, texto: input.value }) });
         input.value = "";
     };
 
-    // Opción 2: Lógica de Punto Rojo (Novedades)
+    // FUNCIÓN PARA BORRAR (Solo Admin)
+    window.borrarPost = async (id) => {
+        if(confirm("⚠️ ¿Tico, estás seguro de borrar este recuerdo para siempre?")) {
+            await deleteDoc(doc(db, "mensajes", id));
+        }
+    };
+
+    // Cargar Muro
     const q = query(collection(db, "mensajes"), orderBy("fecha", "desc"));
     onSnapshot(q, (snapshot) => {
         muro.innerHTML = "";
-        const ultimaVisita = localStorage.getItem('familia_last_view') || 0;
-        let hayNovedades = false;
-
+        const esAdmin = localStorage.getItem('familia_auth') === 'admin';
+        
         snapshot.forEach((snapshotDoc) => {
             const data = snapshotDoc.data();
             const id = snapshotDoc.id;
-            const fechaMs = data.fecha ? data.fecha.toMillis() : 0;
-            const fechaFormateada = data.fecha ? data.fecha.toDate().toLocaleDateString('es-ES', { day:'numeric', month:'short' }) : "";
-
-            if (fechaMs > ultimaVisita) hayNovedades = true;
-
+            const fecha = data.fecha ? data.fecha.toDate().toLocaleDateString('es-ES', { day:'numeric', month:'short' }) : "";
             let comentariosHtml = data.comentarios ? data.comentarios.map(c => `<div class="comment"><b>${c.autor}:</b> ${c.texto}</div>`).join('') : "";
 
             muro.innerHTML += `
                 <div class="post">
                     <div class="post-header">
                         <span class="post-author">👤 ${data.autor}</span>
-                        <span class="post-date">${fechaFormateada}</span>
+                        <div>
+                            <span class="post-date">${fecha}</span>
+                            <button class="btn-delete-admin" style="display:${esAdmin ? 'inline-block' : 'none'}" onclick="borrarPost('${id}')">🗑️</button>
+                        </div>
                     </div>
                     <div class="post-text">${data.texto}</div>
                     ${data.foto ? `<img src="${data.foto}" loading="lazy">` : ""}
-                    <div class="post-actions">
-                        <button class="btn-like" onclick="darLike('${id}')">❤️ ${data.likes || 0}</button>
-                    </div>
-                    <div class="comments-section">
-                        ${comentariosHtml}
-                        <div class="comment-input-group">
-                            <input type="text" id="input-${id}" class="comment-input" placeholder="Comentar...">
-                            <button class="btn-send-comment" onclick="enviarComentario('${id}')">Enviar</button>
-                        </div>
+                    <div class="post-actions"><button class="btn-like" onclick="darLike('${id}')">❤️ ${data.likes || 0}</button></div>
+                    <div class="comments-section">${comentariosHtml}
+                        <div class="comment-input-group"><input type="text" id="input-${id}" class="comment-input" placeholder="Comentar..."><button class="btn-send-comment" onclick="enviarComentario('${id}')">Enviar</button></div>
                     </div>
                 </div>`;
         });
-
-        if (hayNovedades) {
-            notifDot.style.display = "block";
-        }
-
-        // Al pasar 5 segundos en la app, marcamos todo como "leído"
-        setTimeout(() => {
-            localStorage.setItem('familia_last_view', Date.now());
-            notifDot.style.display = "none";
-        }, 5000);
     });
 </script>
 </body>
