@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Yajure App - V3.8</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/emoji/32/000000/house-with-garden.png">
     
+    <title>Familia</title>
+    <meta name="apple-mobile-web-app-title" content="Familia">
+    <meta name="application-name" content="Familia">
+    
+    <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/emoji/32/000000/house-with-garden.png">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
@@ -45,7 +48,6 @@
         
         .post img { width: 100%; border-radius: 20px; margin: 10px 0; display: block; cursor: pointer; }
         
-        /* ESTILO BOTÓN LIKE */
         .btn-like { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; padding: 8px 15px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; text-align: left; margin-bottom: 5px; transition: 0.3s; }
         .btn-like.liked { background: #fff5f5; color: #ff4757; border-color: #ff4757; }
         
@@ -124,7 +126,6 @@
     let todosLosPosts = [];
     let filtroActual = 'Todo';
 
-    // FUNCIÓN PARA PEDIR NOMBRE SI NO EXISTE
     const getNombre = () => {
         let n = localStorage.getItem('user_n');
         if(!n) { n = prompt("👤 Antes de entrar, escribe tu nombre:"); if(n) localStorage.setItem('user_n', n); }
@@ -134,7 +135,6 @@
     if(localStorage.getItem('familia_auth')) {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app-content').style.display = 'block';
-        // CAMBIO: PEDIMOS EL NOMBRE AL CARGAR LA APP PARA QUE LOS LIKES SE VEAN ROJOS
         getNombre();
     }
 
