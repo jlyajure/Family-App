@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Yajure App - V3.7</title>
+    <title>Yajure App - V3.8</title>
     <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/emoji/32/000000/house-with-garden.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -45,10 +45,10 @@
         
         .post img { width: 100%; border-radius: 20px; margin: 10px 0; display: block; cursor: pointer; }
         
+        /* ESTILO BOTÓN LIKE */
         .btn-like { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; padding: 8px 15px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; text-align: left; margin-bottom: 5px; transition: 0.3s; }
         .btn-like.liked { background: #fff5f5; color: #ff4757; border-color: #ff4757; }
         
-        /* ESTILO PARA LA LISTA DE NOMBRES */
         .likes-list { font-size: 11px; color: #64748b; margin-bottom: 15px; margin-left: 5px; font-style: italic; }
 
         .comments-section { background: #f8fafc; padding: 12px; border-radius: 18px; }
@@ -76,7 +76,7 @@
 <div id="app-content">
     <header>
         <h1 style="font-size: 18px; margin:0; color:white;">Familia Yajure</h1>
-        <button onclick="localStorage.clear(); location.reload();" style="background:rgba(255,255,255,0.1); color:#94a3b8; border:none; padding:10px; border-radius:10px; cursor:pointer;">Salir 🔒</button>
+        <button onclick="localStorage.removeItem('familia_auth'); location.reload();" style="background:rgba(255,255,255,0.1); color:#94a3b8; border:none; padding:10px; border-radius:10px; cursor:pointer;">Salir 🔒</button>
     </header>
     <div class="container">
         <div class="filter-scroll">
@@ -124,9 +124,18 @@
     let todosLosPosts = [];
     let filtroActual = 'Todo';
 
+    // FUNCIÓN PARA PEDIR NOMBRE SI NO EXISTE
+    const getNombre = () => {
+        let n = localStorage.getItem('user_n');
+        if(!n) { n = prompt("👤 Antes de entrar, escribe tu nombre:"); if(n) localStorage.setItem('user_n', n); }
+        return n;
+    };
+
     if(localStorage.getItem('familia_auth')) {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app-content').style.display = 'block';
+        // CAMBIO: PEDIMOS EL NOMBRE AL CARGAR LA APP PARA QUE LOS LIKES SE VEAN ROJOS
+        getNombre();
     }
 
     document.getElementById('passInput').oninput = (e) => {
@@ -135,12 +144,6 @@
             localStorage.setItem('familia_auth', val);
             location.reload();
         }
-    };
-
-    const getNombre = () => {
-        let n = localStorage.getItem('user_n');
-        if(!n) { n = prompt("👤 Tu nombre:"); if(n) localStorage.setItem('user_n', n); }
-        return n;
     };
 
     window.abrirLupa = (url) => {
@@ -267,11 +270,9 @@
             const catLabel = data.categoria || "Familia"; 
             
             const listaLikes = data.likesBy || [];
-            // Aquí unimos los nombres con comas
             const nombresLikes = listaLikes.length > 0 ? `Le gusta a: <b>${listaLikes.join(", ")}</b>` : "";
             const yaDiLike = listaLikes.includes(miNombre); 
             const claseLike = yaDiLike ? "btn-like liked" : "btn-like"; 
-            // Si hay likes "viejos" (números), los sumamos visualmente
             const totalVisual = listaLikes.length + (data.likes || 0);
             const textoLike = yaDiLike ? `❤️ Te gusta (${totalVisual})` : `🤍 Me gusta (${totalVisual})`;
 
