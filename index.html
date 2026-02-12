@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Yajure App - V3.5</title>
+    <title>Yajure App - V3.6</title>
     <link rel="icon" type="image/png" sizes="32x32" href="https://img.icons8.com/emoji/32/000000/house-with-garden.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -43,17 +43,18 @@
         
         .btn-delete-admin { background: #ff4757; color: white; border: none; padding: 6px 10px; border-radius: 10px; cursor: pointer; margin-left: 10px; }
         
-        /* FOTO CLICKABLE */
         .post img { width: 100%; border-radius: 20px; margin: 10px 0; display: block; cursor: pointer; }
         
-        .btn-like { background: #fff5f5; color: #ff4757; border: 1px solid #ffecec; padding: 8px 15px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; text-align: left; margin-bottom: 10px; }
+        /* ESTILOS DEL BOTÓN LIKE INTELIGENTE */
+        .btn-like { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; padding: 8px 15px; border-radius: 12px; cursor: pointer; font-weight: 700; width: 100%; text-align: left; margin-bottom: 10px; transition: 0.3s; }
+        .btn-like.liked { background: #fff5f5; color: #ff4757; border-color: #ff4757; } /* Rojo si ya diste like */
+
         .comments-section { background: #f8fafc; padding: 12px; border-radius: 18px; }
         .comment { font-size: 13px; margin-bottom: 6px; border-bottom: 1px solid #edf2f7; padding-bottom: 4px; }
         .comment-input-group { display: flex; gap: 8px; margin-top: 10px; }
         .comment-input { flex: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px; font-size: 13px; outline: none; }
         .btn-send-comment { background: var(--accent-blue); color: white; border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
 
-        /* MODAL DE ZOOM MEJORADO */
         #photo-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 5000; overflow: auto; justify-content: center; align-items: center; }
         #modal-img { max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in; transition: transform 0.2s; }
         #close-modal-btn { position: fixed; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; z-index: 5001; background: rgba(0,0,0,0.5); width: 45px; height: 45px; text-align: center; line-height: 45px; border-radius: 50%; border: 2px solid white; }
@@ -112,7 +113,8 @@
 
 <script type="module">
     import { db } from "./firebase.js";
-    import { collection, addDoc, query, orderBy, onSnapshot, updateDoc, doc, arrayUnion, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    // IMPORTANTE: Agregamos 'getDoc' y 'arrayRemove'
+    import { collection, addDoc, query, orderBy, onSnapshot, updateDoc, doc, arrayUnion, arrayRemove, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const CLAVE_NORMAL = "familia2026";
     const CLAVE_ADMIN = "ticoadmin2026";
@@ -140,20 +142,17 @@
         return n;
     };
 
-    // --- ZOOM NATIVO (EL TRUCO SENCILLO) ---
     window.abrirLupa = (url) => {
         const modal = document.getElementById('photo-modal');
         const img = document.getElementById('modal-img');
         img.src = url;
         modal.style.display = 'flex';
-        // Al abrir, el usuario podrá hacer pinch-to-zoom naturalmente gracias al meta tag
     };
 
     window.cerrarLupa = () => {
         document.getElementById('photo-modal').style.display = 'none';
     };
 
-    // --- SUBIDA DE FOTOS ---
     document.getElementById('labelPost').onclick = (e) => {
         const opts = document.getElementById('upload-options');
         if(opts.style.display === 'none') {
@@ -187,13 +186,14 @@
             
             if (imgData.success) {
                 status.innerHTML = "📝 Guardando...";
+                // Inicializamos con likes vacíos
                 await addDoc(collection(db, "mensajes"), {
                     texto: mensaje || "", 
                     foto: imgData.data.url, 
                     autor: nombre, 
                     categoria: cat, 
                     fecha: new Date(), 
-                    likes: 0, 
+                    likesBy: [], // Nueva lista vacía
                     comentarios: []
                 });
                 label.innerHTML = "✨ SUBIR NUEVO RECUERDO";
@@ -250,6 +250,7 @@
         const muro = document.getElementById('muro');
         muro.innerHTML = "";
         const esAdmin = localStorage.getItem('familia_auth') === "ticoadmin2026";
+        const miNombre = localStorage.getItem('user_n'); // Para saber si yo di like
         let ultimoMes = "";
 
         const postsAmostrar = todosLosPosts.filter(p => filtroActual === 'Todo' || p.categoria === filtroActual);
@@ -264,6 +265,13 @@
             const mesActual = fechaObj.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
             const fechaCorta = fechaObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
             const catLabel = data.categoria || "Familia"; 
+            
+            // LÓGICA DE LIKES INTELIGENTE
+            const listaLikes = data.likesBy || []; // Lista de nombres
+            const numLikes = listaLikes.length + (data.likes || 0); // Sumamos los viejos por si acaso
+            const yaDiLike = listaLikes.includes(miNombre); // ¿Estoy en la lista?
+            const claseLike = yaDiLike ? "btn-like liked" : "btn-like"; // Clase CSS
+            const textoLike = yaDiLike ? `❤️ Te gusta (${numLikes})` : `🤍 Me gusta (${numLikes})`;
 
             if (mesActual !== ultimoMes) {
                 muro.innerHTML += `<div class="month-separator">${mesActual}</div>`;
@@ -283,7 +291,9 @@
                     </div>
                     <p>${data.texto}</p>
                     <img src="${data.foto}" onclick="window.abrirLupa('${data.foto}')">
-                    <button class="btn-like" onclick="darLike('${data.id}')">❤️ ${data.likes || 0}</button>
+                    
+                    <button class="${claseLike}" onclick="darLike('${data.id}')">${textoLike}</button>
+                    
                     <div class="comments-section">${comentariosHtml}
                         <div class="comment-input-group">
                             <input type="text" id="input-${data.id}" class="comment-input" placeholder="Opinar...">
@@ -294,7 +304,28 @@
         });
     }
 
-    window.darLike = async (id) => await updateDoc(doc(db, "mensajes", id), { likes: increment(1) });
+    // --- NUEVA FUNCIÓN DAR LIKE INTELIGENTE ---
+    window.darLike = async (id) => {
+        const nombre = getNombre();
+        if(!nombre) return;
+
+        const docRef = doc(db, "mensajes", id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            const lista = data.likesBy || [];
+
+            if (lista.includes(nombre)) {
+                // Si ya di like, lo quito (UNLIKE)
+                await updateDoc(docRef, { likesBy: arrayRemove(nombre) });
+            } else {
+                // Si no he dado like, lo pongo (LIKE)
+                await updateDoc(docRef, { likesBy: arrayUnion(nombre) });
+            }
+        }
+    };
+
     window.enviarComentario = async (id) => {
         const input = document.getElementById(`input-${id}`);
         const nombre = getNombre();
